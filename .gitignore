@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.test-data/
+.venv/
+.nicegui/
+data/
+*.egg-info/
+.coverage
+htmlcov/

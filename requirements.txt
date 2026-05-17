@@ -1,0 +1,4 @@
+nicegui
+sqlmodel
+reportlab
+pytest

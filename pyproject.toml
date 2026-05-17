@@ -1,0 +1,10 @@
+[project]
+name = "budget-tracker-app"
+version = "0.1.0"
+description = "NiceGUI budget tracker using OOP, ORM, and a layered architecture."
+requires-python = ">=3.10"
+dependencies = [
+    "nicegui",
+    "sqlmodel",
+    "reportlab",
+]
