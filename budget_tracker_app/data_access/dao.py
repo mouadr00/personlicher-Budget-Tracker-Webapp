@@ -47,6 +47,41 @@ class TransactionDAO(BaseDAO):
             session.refresh(transaction)
             return transaction
 
+    def get(self, transaction_id: int) -> Optional[Transaction]:
+        with self.session() as session:
+            statement = (
+                select(Transaction)
+                .where(Transaction.id == transaction_id)
+                .options(selectinload(Transaction.category))
+            )
+            return session.exec(statement).first()
+
+    def update(
+        self,
+        transaction_id: int,
+        booking_date: date,
+        kind: str,
+        category_id: int,
+        amount_chf: float,
+        note: str,
+        transfer_direction: str | None = None,
+    ) -> Optional[Transaction]:
+        with self.session() as session:
+            transaction = session.get(Transaction, transaction_id)
+            if transaction is None:
+                return None
+
+            transaction.booking_date = booking_date
+            transaction.kind = kind
+            transaction.category_id = category_id
+            transaction.amount_chf = amount_chf
+            transaction.note = note
+            transaction.transfer_direction = transfer_direction
+            session.add(transaction)
+            session.commit()
+            session.refresh(transaction)
+            return transaction
+
     def delete(self, transaction_id: int) -> bool:
         with self.session() as session:
             transaction = session.get(Transaction, transaction_id)

@@ -3,6 +3,7 @@ __pycache__/
 .pytest_cache/
 .test-data/
 .venv/
+.venv*/
 .nicegui/
 data/
 *.egg-info/

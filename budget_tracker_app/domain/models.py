@@ -20,17 +20,24 @@ class Transaction(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     booking_date: date = Field(index=True)
-    kind: str = Field(index=True, min_length=6, max_length=8)
+    kind: str = Field(index=True, min_length=6, max_length=10)
     category_id: int = Field(foreign_key="category.id", index=True)
     amount_chf: float = Field(gt=0, le=1_000_000)
     note: str = Field(default="", max_length=160)
+    transfer_direction: Optional[str] = Field(default=None, max_length=24)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
 
     category: Category = Relationship(back_populates="transactions")
 
     @property
     def signed_amount_chf(self) -> float:
-        return self.amount_chf if self.kind == "Einnahme" else -self.amount_chf
+        if self.kind == "Einnahme":
+            return self.amount_chf
+        if self.kind == "Umbuchung" and self.transfer_direction in ("Sparkonto zu Budget", "Sparen zu Budget"):
+            return self.amount_chf
+        if self.kind == "Umbuchung" and self.transfer_direction in ("Budget zu Sparkonto", "Budget zu Sparen"):
+            return -self.amount_chf
+        return -self.amount_chf
 
 
 class MonthlyBudget(SQLModel, table=True):

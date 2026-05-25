@@ -63,8 +63,42 @@ class BudgetController:
     def categories(self) -> list[str]:
         return self.budget_service.list_categories()
 
-    def add_transaction(self, booking_date: str | date, kind: str, category_name: str, amount: str | float, note: str = "") -> Transaction:
-        return self.budget_service.add_transaction(booking_date, kind, category_name, amount, note)
+    def add_category(self, name: str) -> str:
+        return self.budget_service.add_category(name)
+
+    def add_transaction(
+        self,
+        booking_date: str | date,
+        kind: str,
+        category_name: str,
+        amount: str | float,
+        note: str = "",
+        transfer_direction: str | None = None,
+    ) -> Transaction:
+        return self.budget_service.add_transaction(booking_date, kind, category_name, amount, note, transfer_direction)
+
+    def transaction(self, transaction_id: int) -> Transaction | None:
+        return self.budget_service.get_transaction(transaction_id)
+
+    def update_transaction(
+        self,
+        transaction_id: int,
+        booking_date: str | date,
+        kind: str,
+        category_name: str,
+        amount: str | float,
+        note: str = "",
+        transfer_direction: str | None = None,
+    ) -> Transaction:
+        return self.budget_service.update_transaction(
+            transaction_id,
+            booking_date,
+            kind,
+            category_name,
+            amount,
+            note,
+            transfer_direction,
+        )
 
     def delete_transaction(self, transaction_id: int) -> bool:
         return self.budget_service.delete_transaction(transaction_id)
@@ -77,6 +111,9 @@ class BudgetController:
 
     def export_pdf(self, year: int, month: int) -> Path:
         return self.report_service.create_monthly_pdf(self.summary(year, month))
+
+    def export_csv(self, year: int, month: int) -> Path:
+        return self.report_service.create_monthly_csv(self.summary(year, month))
 
 
 class CategoryController:

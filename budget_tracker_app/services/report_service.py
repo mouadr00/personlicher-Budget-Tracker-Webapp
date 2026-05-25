@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import csv
 from pathlib import Path
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
-from .budget_service import MonthlySummary
+from .budget_service import MonthlySummary, TRANSFER_DIRECTION_ALIASES
 
 
 class ReportService:
@@ -50,6 +51,10 @@ class ReportService:
             pdf.drawString(50, y, f"Geplante Ausgaben: CHF {summary.plan.planned_expenses_chf:.2f}")
             y -= 18
             pdf.drawString(50, y, f"Sparziel: CHF {summary.plan.savings_goal_chf:.2f}")
+            y -= 18
+            pdf.drawString(50, y, f"Umbuchung zum Sparkonto: CHF {summary.transfer_to_savings_chf:.2f}")
+            y -= 18
+            pdf.drawString(50, y, f"Umbuchung ins Budget: CHF {summary.transfer_to_budget_chf:.2f}")
             y -= 30
 
         pdf.setFont("Helvetica-Bold", 13)
@@ -58,9 +63,11 @@ class ReportService:
         pdf.setFont("Helvetica", 10)
 
         for transaction in summary.transactions[:28]:
-            category = transaction.category.name if transaction.category else "Unbekannt"
+            category = "Sparkonto" if transaction.kind == "Umbuchung" else (transaction.category.name if transaction.category else "Unbekannt")
             amount = transaction.signed_amount_chf
-            line = f"{transaction.booking_date:%d.%m.%Y} | {transaction.kind} | {category} | CHF {amount:.2f}"
+            normalized_direction = TRANSFER_DIRECTION_ALIASES.get(transaction.transfer_direction, transaction.transfer_direction)
+            direction = f" | {normalized_direction}" if normalized_direction else ""
+            line = f"{transaction.booking_date:%d.%m.%Y} | {transaction.kind}{direction} | {category} | CHF {amount:.2f}"
             pdf.drawString(50, y, line[:100])
             y -= 16
             if y < 60:
@@ -69,4 +76,24 @@ class ReportService:
                 pdf.setFont("Helvetica", 10)
 
         pdf.save()
+        return path
+
+    def create_monthly_csv(self, summary: MonthlySummary) -> Path:
+        path = self.report_dir / f"budget_{summary.year}_{summary.month:02d}.csv"
+        with path.open("w", newline="", encoding="utf-8") as csv_file:
+            writer = csv.writer(csv_file, delimiter=";")
+            writer.writerow(["Datum", "Typ", "Richtung", "Kategorie", "Notiz", "Betrag CHF"])
+            for transaction in summary.transactions:
+                category = "Sparkonto" if transaction.kind == "Umbuchung" else (transaction.category.name if transaction.category else "Unbekannt")
+                direction = TRANSFER_DIRECTION_ALIASES.get(transaction.transfer_direction, transaction.transfer_direction or "")
+                writer.writerow(
+                    [
+                        transaction.booking_date.isoformat(),
+                        transaction.kind,
+                        direction,
+                        category,
+                        transaction.note,
+                        f"{transaction.signed_amount_chf:.2f}",
+                    ]
+                )
         return path

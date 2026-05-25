@@ -7,10 +7,10 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator, Optional
 
+from sqlalchemy import inspect, text
 from sqlalchemy.engine import Engine
-from sqlmodel import SQLModel, Session, create_engine, select
+from sqlmodel import SQLModel, Session, create_engine
 
-from ..domain.models import Category
 from .seed import CategorySeeder
 
 
@@ -36,10 +36,20 @@ class Database:
 
     def init_schema_and_seed(self) -> None:
         SQLModel.metadata.create_all(self._engine)
+        self._migrate_schema()
         with Session(self._engine) as session:
-            if session.exec(select(Category)).first() is None:
-                CategorySeeder().seed(session)
-                session.commit()
+            CategorySeeder().seed(session)
+            session.commit()
+
+    def _migrate_schema(self) -> None:
+        inspector = inspect(self._engine)
+        if "transaction" not in inspector.get_table_names():
+            return
+
+        columns = {column["name"] for column in inspector.get_columns("transaction")}
+        with self._engine.begin() as connection:
+            if "transfer_direction" not in columns:
+                connection.execute(text('ALTER TABLE "transaction" ADD COLUMN transfer_direction VARCHAR(24)'))
 
     @contextmanager
     def session_scope(self) -> Iterator[Session]:
