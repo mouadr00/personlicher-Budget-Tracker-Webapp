@@ -1,6 +1,6 @@
 # Persönlicher Budget Tracker Webapp
 
-Browserbasierte Weiterentwicklung des CLI-Projekts **Persönlicher Budget Tracker**. Die App ist wie das Pizzeria-Referenzprojekt aufgebaut: NiceGUI als Frontend, serverseitige Python-Controller und Services, SQLite als Datenbank und SQLModel als ORM.
+Browserbasierte Weiterentwicklung des CLI-Projekts **Persönlicher Budget Tracker**. Die App ist ähnlich wie das Pizzeria-Referenzprojekt aufgebaut: NiceGUI als Oberfläche, Python für die Logik, SQLite als Datenbank und SQLModel als ORM.
 
 ## Projektidee
 
@@ -24,14 +24,13 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
    Als Benutzer möchte ich Buchungen nach Text, Typ und Kategorie filtern sowie bestehende Einträge editieren oder löschen.
 
 6. **Budgetplan speichern**
-   Als Benutzer möchte ich geplante Einnahmen, Ausgaben und ein Sparziel pro Monat speichern.
+   Als Benutzer möchte ich geplante Einnahmen, geplante Ausgaben und ein Sparziel pro Monat speichern.
 
 7. **Berichte exportieren**
    Als Benutzer möchte ich Monatsberichte als PDF und Buchungsdaten als CSV exportieren.
 
 8. **Passwortschutz verwenden**
    Als Benutzer möchte ich die App mit einem Passwort schützen und das Passwort später ändern.
-<<<<<<< HEAD
 
 ## Use Cases
 
@@ -43,8 +42,6 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 - **Budget planen:** Benutzer speichert geplante Einnahmen, geplante Ausgaben und Sparziel für einen Monat.
 - **Daten finden:** Benutzer sucht und filtert Buchungen nach Text, Typ und Kategorie.
 - **Bericht exportieren:** Benutzer exportiert Monatsdaten als PDF-Bericht oder CSV-Datei.
-=======
->>>>>>> 8eb2d697873ebcac06b2b5b3db74ea897d3c13bb
 
 ## Funktionen
 
@@ -52,22 +49,16 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 - Passwort-Setup, Login und Passwortänderung
 - Realistische Seed-Daten mit 12 Monatsbudgets und über 100 Beispielbuchungen
 - Einnahmen, Ausgaben und Umbuchungen erfassen
-- Umbuchungsrichtungen: `Budget zu Sparkonto` und `Sparkonto zu Budget`
+- Umbuchungen zwischen Budget und Sparkonto
 - Kategorien direkt beim Erfassen einer Buchung hinzufügen
 - Buchungen editieren und löschen
-- Monatsfilter mit Transaktionstabelle
 - Suche und Filter nach Text, Typ und Kategorie
 - Dashboard mit Einnahmen, Ausgaben, Restbudget, grösster Kategorie, Monatsvergleich und Netto-Sparen
-- Kuchendiagramm für Ausgaben-Verteilung
+- Kreisdiagramm für Ausgaben-Verteilung
 - Balkendiagramm für Monatsvergleich
-<<<<<<< HEAD
 - Budget-Limite mit Warnung ab 80 Prozent und bei Überschreitung
-=======
-- Budget-Limite mit Warnung ab 80 Prozent und bei überschreitung
->>>>>>> 8eb2d697873ebcac06b2b5b3db74ea897d3c13bb
 - Sparziel-Fortschritt und einfache automatische Spartipps
-- PDF-Bericht mit ReportLab
-- CSV-Export für Buchungen
+- PDF-Bericht und CSV-Export
 - SQLite-Datenbank via SQLModel ORM
 - Tests für Geschäftslogik, Datenbankzugriff und Integration
 
@@ -79,41 +70,28 @@ Im Dashboard wird ein Monat ausgewählt. Danach zeigt die App Kennzahlen, Diagra
 
 Neue Buchungen werden im Bereich **Neue Buchung** erfasst:
 
-- `Einnahme`: Geld kommt ins Budget.
-- `Ausgabe`: Geld wird ausgegeben.
-- `Umbuchung`: Geld wird zwischen Budget und Sparkonto verschoben.
+- **Einnahme:** Geld kommt ins Budget.
+- **Ausgabe:** Geld wird ausgegeben.
+- **Umbuchung:** Geld wird zwischen Budget und Sparkonto verschoben.
 
-Bei einer Umbuchung wird automatisch die Kategorie `Sparkonto` angezeigt. Die Richtung bestimmt die Wirkung:
+Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die Richtung bestimmt die Wirkung:
 
-- `Budget zu Sparkonto`: reduziert das verfügbare Budget und erhöht den Sparfortschritt.
-- `Sparkonto zu Budget`: erhöht das verfügbare Budget und reduziert den Netto-Sparbetrag.
+- **Budget zu Sparkonto:** reduziert das verfügbare Budget und erhöht den Sparfortschritt.
+- **Sparkonto zu Budget:** erhöht das verfügbare Budget und reduziert den Netto-Sparbetrag.
 
-## Architektur
+## Aufbau der App
 
-```text
-budget_tracker_app/
-|-- application.py          # App-Komposition und NiceGUI-Start
-|-- domain/
-|   `-- models.py           # ORM-Modelle
-|-- data_access/
-|   |-- db.py               # Datenbank-Fassade und Schema-Migration
-|   |-- dao.py              # Repository/DAO-Klassen
-|   `-- seed.py             # Start- und Demo-Daten
-|-- services/
-|   |-- budget_service.py   # Businesslogik und Auswertungen
-|   |-- password_service.py # Passwort-Hashing
-|   |-- report_service.py   # PDF- und CSV-Export
-|   `-- validation_service.py
-`-- ui/
-    |-- controllers.py      # UI-Controller
-    `-- pages.py            # NiceGUI-Seiten
-```
+- **Domain:** Datenmodelle für Transaktionen, Kategorien, Budgetpläne und Einstellungen.
+- **Data Access:** Datenbankverbindung, Tabellenaufbau, Seed-Daten und DAO-Klassen.
+- **Services:** Businesslogik, Validierung, Passwortschutz, Berechnungen und Exporte.
+- **UI:** NiceGUI-Seiten und Controller für Dashboard, Formulare, Tabellen und Aktionen.
+- **Tests:** Unit-, Datenbank- und Integrationstests.
 
 ## Design-Entscheidungen
 
-- **Schichtenarchitektur:** UI, Controller, Services, DAOs und Modelle sind getrennt. Dadurch bleibt die Businesslogik testbar und die UI enthält möglichst wenig Fachlogik.
-- **NiceGUI als Browser-Frontend:** Die App läuft im Browser, die UI-Komponenten werden aber serverseitig in Python erstellt. Das passt zur Modulvorgabe.
-- **SQLite + SQLModel:** SQLite ist für eine lokale Budget-App einfach zu starten. SQLModel wird als ORM verwendet, damit keine manuellen SQL-Statements für normale Datenzugriffe nötig sind.
+- **Schichtenarchitektur:** Oberfläche, Controller, Services, Datenzugriff und Modelle sind getrennt. Dadurch bleibt die Businesslogik testbar.
+- **NiceGUI als Browser-Frontend:** Die App läuft im Browser, wird aber serverseitig mit Python aufgebaut. Das passt zur Modulvorgabe.
+- **SQLite + SQLModel:** SQLite ist für eine lokale Budget-App einfach zu starten. SQLModel wird als ORM verwendet.
 - **Sparkonto als Umbuchung:** Sparen wird nicht als normale Ausgabe behandelt. Stattdessen gibt es Umbuchungen zwischen Monatsbudget und Sparkonto.
 - **Seed-Daten:** Neue Benutzer sehen sofort ein vollständiges Beispielbudget. Dadurch können Dashboard, Diagramme und Filter direkt getestet werden.
 - **Tests:** Die Tests sind in Unit-, DB- und Integrationstests aufgeteilt, damit Logik, Persistenz und Gesamtfluss getrennt geprüft werden.
@@ -128,49 +106,31 @@ Die Entwicklung sollte über GitHub-Commits nachvollziehbar sein. Für die Präs
 
 ## Verwendete Bibliotheken
 
-- `nicegui` für die Browser-Oberfläche
-- `sqlmodel` und `sqlalchemy` für ORM und Datenbankzugriff
-- `reportlab` für PDF-Berichte
-- `pytest` für Tests
+- **NiceGUI:** Browser-Oberfläche
+- **SQLModel und SQLAlchemy:** ORM und Datenbankzugriff
+- **ReportLab:** PDF-Berichte
+- **Pytest:** Tests
 
-## Installation
+## Installation und Start
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
+1. Virtuelle Umgebung erstellen: `python -m venv .venv`
+2. Umgebung aktivieren: `.\.venv\Scripts\Activate.ps1`
+3. Abhängigkeiten installieren: `pip install -r requirements.txt`
+4. App starten: `python -m budget_tracker_app`
+5. Im Browser öffnen: `http://localhost:8080`
 
-Falls die mitgelieferte lokale Umgebung verwendet wird:
-
-```powershell
-.\.venv312\Scripts\Activate.ps1
-```
-
-## Start
-
-```powershell
-python -m budget_tracker_app
-```
-
-Danach die App im Browser öffnen:
-
-```text
-http://localhost:8080
-```
+Falls die mitgelieferte lokale Umgebung verwendet wird, kann direkt `.\.venv312\Scripts\Activate.ps1` genutzt werden.
 
 ## Tests
 
-```powershell
-python -m pytest
-```
+Die Tests werden mit `python -m pytest` gestartet.
 
-Die Tests erfüllen die geforderte Mindeststruktur:
+Die geforderte Mindeststruktur ist erfüllt:
 
 - 12 Tests insgesamt
-- 6 Unit-Tests in `tests/test_unit.py`
-- 3 Datenbanktests in `tests/test_db.py`
-- 3 Integrationstests in `tests/test_integration.py`
+- 6 Unit-Tests
+- 3 Datenbanktests
+- 3 Integrationstests
 
 ## Projektanforderungen SS26
 
