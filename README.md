@@ -31,6 +31,7 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 
 8. **Passwortschutz verwenden**
    Als Benutzer möchte ich die App mit einem Passwort schützen und das Passwort später ändern.
+<<<<<<< HEAD
 
 ## Use Cases
 
@@ -42,6 +43,8 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 - **Budget planen:** Benutzer speichert geplante Einnahmen, geplante Ausgaben und Sparziel für einen Monat.
 - **Daten finden:** Benutzer sucht und filtert Buchungen nach Text, Typ und Kategorie.
 - **Bericht exportieren:** Benutzer exportiert Monatsdaten als PDF-Bericht oder CSV-Datei.
+=======
+>>>>>>> 8eb2d697873ebcac06b2b5b3db74ea897d3c13bb
 
 ## Funktionen
 
@@ -57,7 +60,11 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 - Dashboard mit Einnahmen, Ausgaben, Restbudget, grösster Kategorie, Monatsvergleich und Netto-Sparen
 - Kuchendiagramm für Ausgaben-Verteilung
 - Balkendiagramm für Monatsvergleich
+<<<<<<< HEAD
 - Budget-Limite mit Warnung ab 80 Prozent und bei Überschreitung
+=======
+- Budget-Limite mit Warnung ab 80 Prozent und bei überschreitung
+>>>>>>> 8eb2d697873ebcac06b2b5b3db74ea897d3c13bb
 - Sparziel-Fortschritt und einfache automatische Spartipps
 - PDF-Bericht mit ReportLab
 - CSV-Export für Buchungen
