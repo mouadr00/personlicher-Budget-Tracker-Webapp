@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from calendar import monthrange
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
+from statistics import mean
 from typing import Dict, List, Optional
 
 from ..data_access.dao import CategoryDAO, MonthlyBudgetDAO, TransactionDAO
@@ -22,7 +24,17 @@ TRANSFER_DIRECTION_ALIASES = {
     LEGACY_TRANSFER_TO_SAVINGS: TRANSFER_TO_SAVINGS,
     LEGACY_TRANSFER_TO_BUDGET: TRANSFER_TO_BUDGET,
 }
-SAVINGS_CATEGORY = "Sparen"
+SAVINGS_CATEGORY = "Sparkonto"
+LEGACY_SAVINGS_CATEGORY = "Sparen"
+
+
+@dataclass
+class RecurringExpense:
+    name: str
+    category: str
+    monthly_amount_chf: float
+    yearly_amount_chf: float
+    months_seen: int
 
 
 @dataclass
@@ -31,7 +43,11 @@ class MonthlySummary:
     month: int
     income_chf: float
     expenses_chf: float
+    cash_flow_chf: float
     balance_chf: float
+    budget_cash_chf: float
+    savings_balance_chf: float
+    net_worth_chf: float
     largest_expense_category: Optional[str]
     largest_expense_chf: float
     largest_expense_share_pct: float
@@ -43,7 +59,11 @@ class MonthlySummary:
     budget_used_chf: float
     spending_budget_used_pct: float
     savings_goal_progress_pct: float
+    available_per_day_chf: float
+    budget_health_score: int
+    budget_health_label: str
     category_expenses: Dict[str, float]
+    recurring_expenses: List[RecurringExpense]
     transactions: List[Transaction]
     plan: Optional[MonthlyBudget]
 
@@ -155,6 +175,7 @@ class BudgetService:
         self._validate_month(year, month)
         start, end = self._period(year, month)
         transactions = self.transaction_dao.list_for_period(start, end)
+        cumulative_transactions = self._transactions_until(end)
 
         income = round(sum(t.amount_chf for t in transactions if t.kind == "Einnahme"), 2)
         expenses = 0.0
@@ -176,7 +197,7 @@ class BudgetService:
             if transaction.kind != "Ausgabe":
                 continue
 
-            if category_name == SAVINGS_CATEGORY:
+            if category_name in (SAVINGS_CATEGORY, LEGACY_SAVINGS_CATEGORY):
                 transfer_to_savings = round(transfer_to_savings + transaction.amount_chf, 2)
                 continue
 
@@ -195,6 +216,7 @@ class BudgetService:
         plan = self.budget_dao.get(year, month)
         savings_booked = round(transfer_to_savings - transfer_to_budget, 2)
         budget_used = round(expenses + transfer_to_savings - transfer_to_budget, 2)
+        cash_flow = round(income - expenses, 2)
         planned_expenses = plan.planned_expenses_chf if plan else 0.0
         remaining_expense_budget = round(planned_expenses - budget_used, 2) if plan else 0.0
         spending_budget_used_pct = round((max(budget_used, 0.0) / planned_expenses) * 100, 1) if planned_expenses else 0.0
@@ -204,13 +226,28 @@ class BudgetService:
             else 0.0
         )
         largest_expense_share_pct = round((largest_amount / expenses) * 100, 1) if expenses else 0.0
+        budget_cash, savings_balance, net_worth = self._cumulative_balances(cumulative_transactions)
+        available_per_day = self._available_per_day(year, month, remaining_expense_budget, bool(plan))
+        health_score, health_label = self._budget_health(
+            has_plan=bool(plan),
+            spending_budget_used_pct=spending_budget_used_pct,
+            savings_goal_progress_pct=savings_goal_progress_pct,
+            cash_flow_chf=cash_flow,
+            savings_booked_chf=savings_booked,
+            largest_expense_share_pct=largest_expense_share_pct,
+        )
+        recurring_expenses = self._recurring_expenses(cumulative_transactions)
 
         return MonthlySummary(
             year=year,
             month=month,
             income_chf=income,
             expenses_chf=expenses,
+            cash_flow_chf=cash_flow,
             balance_chf=round(income - budget_used, 2),
+            budget_cash_chf=budget_cash,
+            savings_balance_chf=savings_balance,
+            net_worth_chf=net_worth,
             largest_expense_category=largest_category,
             largest_expense_chf=largest_amount,
             largest_expense_share_pct=largest_expense_share_pct,
@@ -222,10 +259,134 @@ class BudgetService:
             budget_used_chf=budget_used,
             spending_budget_used_pct=spending_budget_used_pct,
             savings_goal_progress_pct=savings_goal_progress_pct,
+            available_per_day_chf=available_per_day,
+            budget_health_score=health_score,
+            budget_health_label=health_label,
             category_expenses=category_expenses,
+            recurring_expenses=recurring_expenses,
             transactions=transactions,
             plan=plan,
         )
+
+    def _transactions_until(self, end: date) -> list[Transaction]:
+        if hasattr(self.transaction_dao, "list_until"):
+            return self.transaction_dao.list_until(end)
+        return self.transaction_dao.list_for_period(date(2000, 1, 1), end)
+
+    def _cumulative_balances(self, transactions: list[Transaction]) -> tuple[float, float, float]:
+        budget_cash = 0.0
+        savings_balance = 0.0
+
+        for transaction in transactions:
+            category_name = transaction.category.name if transaction.category else ""
+            if transaction.kind == "Einnahme":
+                budget_cash += transaction.amount_chf
+            elif transaction.kind == "Umbuchung":
+                normalized_direction = self._normalize_transfer_direction(transaction.transfer_direction)
+                if normalized_direction == TRANSFER_TO_BUDGET:
+                    budget_cash += transaction.amount_chf
+                    savings_balance -= transaction.amount_chf
+                else:
+                    budget_cash -= transaction.amount_chf
+                    savings_balance += transaction.amount_chf
+            elif category_name in (SAVINGS_CATEGORY, LEGACY_SAVINGS_CATEGORY):
+                budget_cash -= transaction.amount_chf
+                savings_balance += transaction.amount_chf
+            else:
+                budget_cash -= transaction.amount_chf
+
+        budget_cash = round(budget_cash, 2)
+        savings_balance = round(savings_balance, 2)
+        return budget_cash, savings_balance, round(budget_cash + savings_balance, 2)
+
+    @staticmethod
+    def _available_per_day(year: int, month: int, remaining_budget: float, has_plan: bool) -> float:
+        if not has_plan:
+            return 0.0
+
+        today = date.today()
+        last_day = monthrange(year, month)[1]
+        if (year, month) == (today.year, today.month):
+            days_left = max(last_day - today.day + 1, 1)
+        elif (year, month) > (today.year, today.month):
+            days_left = last_day
+        else:
+            days_left = 0
+
+        return round(remaining_budget / days_left, 2) if days_left else 0.0
+
+    @staticmethod
+    def _budget_health(
+        *,
+        has_plan: bool,
+        spending_budget_used_pct: float,
+        savings_goal_progress_pct: float,
+        cash_flow_chf: float,
+        savings_booked_chf: float,
+        largest_expense_share_pct: float,
+    ) -> tuple[int, str]:
+        score = 100
+        if not has_plan:
+            score -= 20
+        elif spending_budget_used_pct > 100:
+            score -= 35
+        elif spending_budget_used_pct >= 80:
+            score -= 15
+
+        if has_plan and savings_goal_progress_pct < 50:
+            score -= 12
+        if cash_flow_chf < 0:
+            score -= 20
+        if savings_booked_chf < 0:
+            score -= 10
+        if largest_expense_share_pct >= 45:
+            score -= 8
+
+        score = max(0, min(100, score))
+        if score >= 80:
+            label = "Stark"
+        elif score >= 60:
+            label = "Okay"
+        elif score >= 40:
+            label = "Achtung"
+        else:
+            label = "Kritisch"
+        return score, label
+
+    def _recurring_expenses(self, transactions: list[Transaction]) -> list[RecurringExpense]:
+        grouped: dict[tuple[str, str], list[Transaction]] = defaultdict(list)
+        excluded_categories = {"Lebensmittel", "Freizeit", "Sonstiges", SAVINGS_CATEGORY, LEGACY_SAVINGS_CATEGORY}
+
+        for transaction in transactions:
+            if transaction.kind != "Ausgabe" or not transaction.category:
+                continue
+            category_name = transaction.category.name
+            if category_name in excluded_categories:
+                continue
+            key = (category_name, (transaction.note or category_name).strip().lower())
+            grouped[key].append(transaction)
+
+        recurring: list[RecurringExpense] = []
+        for (category_name, note), rows in grouped.items():
+            months_seen = {(row.booking_date.year, row.booking_date.month) for row in rows}
+            if len(months_seen) < 3:
+                continue
+            amounts = [row.amount_chf for row in rows]
+            average_amount = mean(amounts)
+            if max(amounts) - min(amounts) > max(20.0, average_amount * 0.15):
+                continue
+            display_name = note.title() if note and note != category_name.lower() else category_name
+            recurring.append(
+                RecurringExpense(
+                    name=display_name,
+                    category=category_name,
+                    monthly_amount_chf=round(average_amount, 2),
+                    yearly_amount_chf=round(average_amount * 12, 2),
+                    months_seen=len(months_seen),
+                )
+            )
+
+        return sorted(recurring, key=lambda item: item.yearly_amount_chf, reverse=True)[:5]
 
     def _validated_transaction_fields(
         self,

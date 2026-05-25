@@ -54,6 +54,10 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 - Buchungen editieren und löschen
 - Suche und Filter nach Text, Typ und Kategorie
 - Dashboard mit Einnahmen, Ausgaben, Restbudget, grösster Kategorie, Monatsvergleich und Netto-Sparen
+- Budget-Health-Score mit einfacher Bewertung des Monats
+- Nettovermögen, Budgetkonto und Sparkonto als getrennte Kennzahlen
+- Tagesbudget: zeigt, wie viel pro Tag bis Monatsende noch frei ist
+- Erkennung wiederkehrender Ausgaben mit geschätzten Jahreskosten
 - Kreisdiagramm für Ausgaben-Verteilung
 - Balkendiagramm für Monatsvergleich
 - Budget-Limite mit Warnung ab 80 Prozent und bei Überschreitung
@@ -95,6 +99,16 @@ Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die 
 - **Sparkonto als Umbuchung:** Sparen wird nicht als normale Ausgabe behandelt. Stattdessen gibt es Umbuchungen zwischen Monatsbudget und Sparkonto.
 - **Seed-Daten:** Neue Benutzer sehen sofort ein vollständiges Beispielbudget. Dadurch können Dashboard, Diagramme und Filter direkt getestet werden.
 - **Tests:** Die Tests sind in Unit-, DB- und Integrationstests aufgeteilt, damit Logik, Persistenz und Gesamtfluss getrennt geprüft werden.
+
+## Vergleich mit Budget-Apps
+
+Die App übernimmt bewusst passende Ideen aus bekannten Budgetplanern:
+
+- **YNAB:** Monatsplan, Budgetziele, Sparziel-Fortschritt, Auswertungen und klare Budgetwarnungen.
+- **Actual Budget:** lokale Datenhaltung, SQLite-Datenbank, Umbuchungen, Export und Fokus auf Kontrolle über die eigenen Daten.
+- **Copilot Money:** Dashboard-Kennzahlen, Filter, Cashflow, Sparkonto-Logik, wiederkehrende Ausgaben und einfache automatische Hinweise.
+
+Nicht umgesetzt sind Bank-Sync, echte Mehrbenutzer-Synchronisation, Investments und automatische Bank-Importe. Diese Punkte wären für ein Schulprojekt deutlich grösser und werden deshalb als Erweiterungen betrachtet.
 
 ## Projektmanagement und Arbeitsaufteilung
 
@@ -140,6 +154,7 @@ Die geforderte Mindeststruktur ist erfüllt:
 - **Validierung:** Datum, Betrag, Kategorie, Passwort, Umbuchung und Budgetplan werden geprüft.
 - **Seed-Daten:** Die App zeigt beim Start ein vollständiges Beispielbudget.
 - **Analysen:** Dashboard, Diagramme, Monatsvergleich, Budgetwarnung und Spartipps helfen beim Budget-Tracking.
+- **Erweiterte Auswertung:** Nettovermögen, Budget-Health-Score, Tagesbudget und wiederkehrende Ausgaben machen die App vergleichbarer mit modernen Budgetplanern.
 - **Export:** Monatsberichte können als PDF und CSV erstellt werden.
 - **Dokumentation:** README beschreibt Ziel, Funktionen, Architektur, Bedienung und Tests.
 

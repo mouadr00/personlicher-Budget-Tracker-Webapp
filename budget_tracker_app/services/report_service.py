@@ -32,13 +32,19 @@ class ReportService:
         for label, value in [
             ("Einnahmen", summary.income_chf),
             ("Ausgaben", summary.expenses_chf),
+            ("Monats-Cashflow", summary.cash_flow_chf),
             ("Saldo", summary.balance_chf),
+            ("Budgetkonto", summary.budget_cash_chf),
+            ("Sparkonto", summary.savings_balance_chf),
+            ("Nettovermoegen", summary.net_worth_chf),
         ]:
             pdf.drawString(50, y, f"{label}: CHF {value:.2f}")
             y -= 22
 
         largest = summary.largest_expense_category or "Keine Ausgaben"
-        pdf.drawString(50, y, f"Groesste Ausgabenkategorie: {largest} (CHF {summary.largest_expense_chf:.2f})")
+        pdf.drawString(50, y, f"Grösste Ausgabenkategorie: {largest} (CHF {summary.largest_expense_chf:.2f})")
+        y -= 22
+        pdf.drawString(50, y, f"Budget-Health: {summary.budget_health_score}/100 ({summary.budget_health_label})")
         y -= 35
 
         if summary.plan:

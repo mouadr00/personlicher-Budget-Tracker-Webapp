@@ -27,8 +27,8 @@ def test_integration_plan_transactions_and_report_work_together(budget_service, 
     budget_service.save_plan(2030, 5, "4000", "2500", "500")
     transaction = budget_service.add_transaction("2030-05-04", "Ausgabe", "Lebensmittel", "95.90")
     budget_service.update_transaction(transaction.id, "2030-05-04", "Ausgabe", "Freizeit", "110.00", "Korrigiert")
-    budget_service.add_transaction("2030-05-05", "Umbuchung", "Sparen", "200.00", "Notgroschen", "Budget zu Sparkonto")
-    budget_service.add_transaction("2030-05-06", "Umbuchung", "Sparen", "50.00", "Zurueck ins Monatsbudget", "Sparkonto zu Budget")
+    budget_service.add_transaction("2030-05-05", "Umbuchung", "Sparkonto", "200.00", "Notgroschen", "Budget zu Sparkonto")
+    budget_service.add_transaction("2030-05-06", "Umbuchung", "Sparkonto", "50.00", "Zurück ins Monatsbudget", "Sparkonto zu Budget")
 
     summary = budget_service.monthly_summary(2030, 5)
     pdf_path = report_service.create_monthly_pdf(summary)
@@ -39,6 +39,9 @@ def test_integration_plan_transactions_and_report_work_together(budget_service, 
     assert summary.expenses_chf == 110.00
     assert summary.savings_booked_chf == 150.00
     assert summary.remaining_expense_budget_chf == 2240.00
+    assert summary.savings_balance_chf >= 150.00
+    assert summary.net_worth_chf == round(summary.budget_cash_chf + summary.savings_balance_chf, 2)
+    assert summary.budget_health_score > 0
     assert summary.largest_expense_category == "Freizeit"
     assert pdf_path.exists()
     assert csv_path.exists()

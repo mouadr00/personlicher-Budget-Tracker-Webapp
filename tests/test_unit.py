@@ -77,8 +77,8 @@ def test_unit_monthly_summary_calculates_totals_and_largest_category():
         make_transaction(1, "Einnahme", "Gehalt", 3500.00),
         make_transaction(2, "Ausgabe", "Miete", 1200.00),
         make_transaction(3, "Ausgabe", "Lebensmittel", 80.50),
-        make_transaction(4, "Umbuchung", "Sparen", 40.00, "Budget zu Sparkonto"),
-        make_transaction(5, "Umbuchung", "Sparen", 10.00, "Sparkonto zu Budget"),
+        make_transaction(4, "Umbuchung", "Sparkonto", 40.00, "Budget zu Sparkonto"),
+        make_transaction(5, "Umbuchung", "Sparkonto", 10.00, "Sparkonto zu Budget"),
     ]
     service = BudgetService(
         transaction_dao=FakeTransactionDAO(transactions),
@@ -90,7 +90,11 @@ def test_unit_monthly_summary_calculates_totals_and_largest_category():
 
     assert summary.income_chf == 3500.00
     assert summary.expenses_chf == 1280.50
+    assert summary.cash_flow_chf == 2219.50
     assert summary.balance_chf == 2189.50
+    assert summary.budget_cash_chf == 2189.50
+    assert summary.savings_balance_chf == 30.00
+    assert summary.net_worth_chf == 2219.50
     assert summary.largest_expense_category == "Miete"
     assert summary.largest_expense_share_pct == 93.7
     assert summary.savings_booked_chf == 30.00
@@ -98,3 +102,4 @@ def test_unit_monthly_summary_calculates_totals_and_largest_category():
     assert summary.transfer_to_budget_chf == 10.00
     assert summary.budget_used_chf == 1310.50
     assert summary.savings_goal_progress_pct == 30.0
+    assert summary.budget_health_label in {"Stark", "Okay", "Achtung", "Kritisch"}

@@ -18,7 +18,7 @@ DEFAULT_CATEGORIES = [
     "Versicherung",
     "Freizeit",
     "Transport",
-    "Sparen",
+    "Sparkonto",
     "Schulden",
     "Sonstiges",
 ]
@@ -36,6 +36,13 @@ class CategorySeeder:
         categories: dict[str, Category] = {}
         for name in DEFAULT_CATEGORIES:
             category = session.exec(select(Category).where(Category.name == name)).first()
+            if category is None and name == "Sparkonto":
+                legacy_category = session.exec(select(Category).where(Category.name == "Sparen")).first()
+                if legacy_category is not None:
+                    legacy_category.name = "Sparkonto"
+                    session.add(legacy_category)
+                    session.flush()
+                    category = legacy_category
             if category is None:
                 category = Category(name=name)
                 session.add(category)
@@ -81,20 +88,20 @@ class CategorySeeder:
                 (3, "Einnahme", "Sonstiges", 420.00, "Stipendium"),
                 (4, "Ausgabe", "Miete", 780.00, "WG-Zimmer"),
                 (5, "Ausgabe", "Versicherung", 145.00, "Krankenversicherung"),
-                (7, "Umbuchung", "Sparen", 120.00, "Notgroschen", "Budget zu Sparkonto"),
-                (9, "Ausgabe", "Transport", 62.00, "Studenten-OEV-Abo"),
+                (7, "Umbuchung", "Sparkonto", 120.00, "Notgroschen", "Budget zu Sparkonto"),
+                (9, "Ausgabe", "Transport", 62.00, "Studenten-ÖV-Abo"),
                 (11, "Ausgabe", "Freizeit", 58.00, "Kino und Cafe"),
                 (13, "Ausgabe", "Lebensmittel", 86.70, "Wocheneinkauf"),
                 (17, "Ausgabe", "Lebensmittel", 79.90, "Wocheneinkauf"),
-                (19, "Ausgabe", "Schulden", 95.00, "BAfoeG-Ruecklage"),
+                (19, "Ausgabe", "Schulden", 95.00, "BAföG-Rücklage"),
                 (22, "Ausgabe", "Freizeit", 42.00, "Sportverein"),
                 (24, "Ausgabe", "Lebensmittel", 91.40, "Wocheneinkauf"),
-                (27, "Ausgabe", "Transport", 18.60, "Spaetbus"),
+                (27, "Ausgabe", "Transport", 18.60, "Spätbus"),
                 (29, "Ausgabe", "Sonstiges", 36.50, "Lernmaterial"),
             ]
 
             if month in (2, 9):
-                entries.append((15, "Ausgabe", "Sonstiges", 320.00, "Semestergebuehren"))
+                entries.append((15, "Ausgabe", "Sonstiges", 320.00, "Semestergebühren"))
 
             for entry in entries:
                 day, kind, category_name, amount, note, *direction = entry

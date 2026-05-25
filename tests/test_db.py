@@ -13,6 +13,8 @@ def test_db_default_seed_contains_categories_budget_and_demo_bookings(database):
     assert "Lebensmittel" in names
     assert "Gehalt" in names
     assert "Miete" in names
+    assert "Sparkonto" in names
+    assert "Sparen" not in names
     assert len(may_rows) >= 10
     assert any(row.kind == "Umbuchung" and row.transfer_direction == "Budget zu Sparkonto" for row in may_rows)
     assert may_plan is not None

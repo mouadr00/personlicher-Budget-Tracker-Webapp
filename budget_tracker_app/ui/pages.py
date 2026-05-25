@@ -6,7 +6,7 @@ from datetime import date
 
 from nicegui import ui
 
-from ..services.budget_service import TRANSACTION_KINDS, TRANSFER_DIRECTIONS, TRANSFER_DIRECTION_ALIASES
+from ..services.budget_service import SAVINGS_CATEGORY, TRANSACTION_KINDS, TRANSFER_DIRECTIONS, TRANSFER_DIRECTION_ALIASES
 from .controllers import AuthController, BudgetController, CategoryController
 
 
@@ -198,6 +198,13 @@ class Pages:
                             delta_sign = "+" if expense_delta > 0 else ""
                             self._metric("Monatsvergleich", f"{delta_sign}CHF {expense_delta:.2f}", delta_class, "Ausgaben vs. Vormonat")
                             self._metric("Netto gespart", f"CHF {summary.savings_booked_chf:.2f}", "amount-blue", "Umbuchungen Sparkonto")
+                            health_class = "amount-positive" if summary.budget_health_score >= 80 else "amount-amber"
+                            if summary.budget_health_score < 60:
+                                health_class = "amount-negative"
+                            self._metric("Budget-Health", f"{summary.budget_health_score}/100", health_class, summary.budget_health_label)
+                            self._metric("Nettovermögen", f"CHF {summary.net_worth_chf:.2f}", "amount-blue", "Budgetkonto plus Sparkonto")
+                            day_class = "amount-positive" if summary.available_per_day_chf >= 0 else "amount-negative"
+                            self._metric("Pro Tag frei", f"CHF {summary.available_per_day_chf:.2f}", day_class, "Bis Monatsende")
 
                         if summary.plan and summary.spending_budget_used_pct >= 100:
                             self._warning("Budget-Limite überschritten", "Du hast mehr Budget genutzt als geplant. Prüfe die grössten Kategorien und verschiebe falls nötig Geld vom Sparkonto zurück.")
@@ -247,8 +254,8 @@ class Pages:
                                     transfer_direction.visible = is_transfer
                                     category.visible = not is_transfer
                                     category_create_row.visible = not is_transfer
-                                    if is_transfer and "Sparen" in categories:
-                                        category.value = "Sparen"
+                                    if is_transfer and SAVINGS_CATEGORY in categories:
+                                        category.value = SAVINGS_CATEGORY
                                     transfer_direction.update()
                                     category.update()
                                     category_create_row.update()
@@ -328,6 +335,13 @@ class Pages:
                                     )
 
                                 ui.separator()
+                                ui.label("Kontostand und Cashflow").classes("section-title")
+                                with ui.element("div").classes("split-grid w-full"):
+                                    self._mini_fact("Budgetkonto", summary.budget_cash_chf)
+                                    self._mini_fact("Sparkonto", summary.savings_balance_chf)
+                                self._mini_fact("Monats-Cashflow", summary.cash_flow_chf)
+
+                                ui.separator()
                                 ui.label("Ausgaben nach Kategorie").classes("section-title")
                                 top_categories = sorted(summary.category_expenses.items(), key=lambda item: item[1], reverse=True)[:5]
                                 if not top_categories:
@@ -335,6 +349,16 @@ class Pages:
                                 for category_name, spent in top_categories:
                                     share = round((spent / summary.expenses_chf) * 100, 1) if summary.expenses_chf else 0.0
                                     self._category_bar(category_name, spent, share)
+
+                                ui.separator()
+                                ui.label("Wiederkehrende Ausgaben").classes("section-title")
+                                if not summary.recurring_expenses:
+                                    ui.label("Noch nicht genug Historie für sichere Erkennung.").classes("muted")
+                                for recurring in summary.recurring_expenses:
+                                    ui.label(
+                                        f"{recurring.name}: CHF {recurring.monthly_amount_chf:.2f}/Monat "
+                                        f"(ca. CHF {recurring.yearly_amount_chf:.2f}/Jahr)"
+                                    ).classes("muted")
 
                                 ui.separator()
                                 ui.label("Spartipps").classes("section-title")
@@ -439,8 +463,8 @@ class Pages:
                             is_transfer = edit_kind.value == "Umbuchung"
                             edit_transfer_direction.visible = is_transfer
                             edit_category.visible = not is_transfer
-                            if is_transfer and "Sparen" in categories:
-                                edit_category.value = "Sparen"
+                            if is_transfer and SAVINGS_CATEGORY in categories:
+                                edit_category.value = SAVINGS_CATEGORY
                             edit_transfer_direction.update()
                             edit_category.update()
 
@@ -592,6 +616,12 @@ class Pages:
     @staticmethod
     def _spending_tips(summary, previous_summary) -> list[str]:
         tips: list[str] = []
+        if summary.budget_health_score < 60:
+            tips.append(f"Budget-Health ist {summary.budget_health_label}: Plan, Ausgaben und Sparziel kurz prüfen.")
+
+        if summary.plan and summary.available_per_day_chf > 0:
+            tips.append(f"Bis Monatsende sind ungefähr CHF {summary.available_per_day_chf:.2f} pro Tag frei.")
+
         if summary.plan and summary.spending_budget_used_pct >= 100:
             tips.append("Budget-Limite ist überschritten: zuerst grosse Kategorien prüfen, bevor neue Ausgaben dazukommen.")
         elif summary.plan and summary.spending_budget_used_pct >= 80:
@@ -627,6 +657,13 @@ class Pages:
             with ui.element("div").classes("progress-track"):
                 ui.element("div").classes(f"progress-fill {tone}").style(f"width: {safe_percent}%;")
             ui.label(detail).classes("muted text-xs")
+
+    @staticmethod
+    def _mini_fact(label: str, amount: float) -> None:
+        amount_class = "amount-positive" if amount >= 0 else "amount-negative"
+        with ui.column().classes("gap-1"):
+            ui.label(label).classes("font-bold")
+            ui.label(f"CHF {amount:.2f}").classes(amount_class)
 
     @staticmethod
     def _category_bar(category_name: str, spent: float, share: float) -> None:

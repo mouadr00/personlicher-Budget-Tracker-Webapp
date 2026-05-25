@@ -102,6 +102,16 @@ class TransactionDAO(BaseDAO):
             )
             return list(session.exec(statement).all())
 
+    def list_until(self, end: date) -> List[Transaction]:
+        with self.session() as session:
+            statement = (
+                select(Transaction)
+                .where(Transaction.booking_date < end)
+                .options(selectinload(Transaction.category))
+                .order_by(Transaction.booking_date.asc(), Transaction.id.asc())
+            )
+            return list(session.exec(statement).all())
+
 
 class MonthlyBudgetDAO(BaseDAO):
     def get(self, year: int, month: int) -> Optional[MonthlyBudget]:
