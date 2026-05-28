@@ -1,4 +1,4 @@
-"""NiceGUI page definitions."""
+﻿"""NiceGUI page definitions."""
 
 from __future__ import annotations
 
@@ -59,19 +59,6 @@ class Pages:
             <style>
             body {
                 background: #f8fafc;
-<<<<<<< HEAD
-                color: #172033;
-                font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            }
-            .metric {
-                background: white;
-                border: 1px solid #dce3ec;
-                border-radius: 8px;
-                box-shadow: 0 10px 24px rgba(28, 42, 66, 0.07);
-            }
-            .metric { padding: 14px 16px; min-height: 112px; }
-            .text-xl font-bold leading-snug { font-size: 1.2rem; font-weight: 800; line-height: 1.25; }
-=======
                 color: #0f172a;
                 font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             }
@@ -82,38 +69,30 @@ class Pages:
             .metric-value { font-size: 1.38rem; font-weight: 800; line-height: 1.25; }
             .metric-subtitle { color: #64748b; font-size: 0.88rem; line-height: 1.25; }
             .progress-block { gap: 7px; }
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
             .progress-track { width: 100%; height: 10px; background: #e8edf4; border-radius: 999px; overflow: hidden; }
             .progress-fill { height: 100%; border-radius: 999px; }
+            .tone-green { background: #0f766e; }
+            .tone-blue { background: #2563eb; }
+            .tone-red { background: #dc2626; }
+            .tone-amber { background: #d97706; }
+            .warning-panel { background: #fff7ed; border-color: #fed7aa; }
             .tip-list { margin: 0; padding-left: 18px; color: #465264; }
             .transaction-table .q-table__top, .transaction-table .q-table__bottom { background: white; }
             .edit-dialog { width: min(560px, 92vw); border-radius: 8px; }
             </style>
             """
         )
-<<<<<<< HEAD
-        with ui.row().classes("w-full items-center justify-between gap-3 "
-                              "bg-slate-900 text-white rounded-2x1 px-5 py-4 shadow-lg"):
-            ui.label(title).classes("text-3x1 font-bold leading-tight")
-=======
         with ui.row().classes(TOPBAR_CLASS):
             ui.label(title).classes(PAGE_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
             with ui.row().classes("items-center gap-4"):
-                ui.link("Übersicht", "/").classes("text-blue-100 font-semibold no-underline hover:text-white")
-                ui.link("Kategorien", "/categories").classes("text-blue-100 font-semibold no-underline hover:text-white")
-                ui.link("Einstellungen", "/settings").classes("text-blue-100 font-semibold no-underline hover:text-white")
+                ui.link("Übersicht", "/").classes("nav-link")
+                ui.link("Kategorien", "/categories").classes("nav-link")
+                ui.link("Einstellungen", "/settings").classes("nav-link")
                 ui.button("Logout", on_click=lambda: (self.auth.logout(), ui.navigate.to("/login"))).props("flat color=white")
 
     def _register_login(self) -> None:
         @ui.page("/login")
         def login_page() -> None:
-<<<<<<< HEAD
-            ui.add_head_html("<style>body { background: #f8fafc; }</style>")
-            with ui.element("div").classes("min-h-screen flex items-center justify-center bg-slate-100 p-6"):
-                with ui.column().classes("w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-lg p-7 gap-4"):
-                    ui.label("Budget Tracker").classes("text-3x1 font-bold leading-tight")
-=======
             ui.add_head_html(
                 """
                 <style>
@@ -129,9 +108,8 @@ class Pages:
             with ui.element("div").classes(LOGIN_SHELL_CLASS):
                 with ui.column().classes(LOGIN_PANEL_CLASS):
                     ui.label("Budget Tracker").classes(PAGE_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                     if not self.auth.has_account():
-                        ui.label("Beim ersten Start ein Passwort festlegen.").classes("text-slate-500")
+                        ui.label("Beim ersten Start ein Passwort festlegen.").classes("muted")
                         password = ui.input("Neues Passwort", password=True, password_toggle_button=True).classes("w-full")
 
                         def setup() -> None:
@@ -166,11 +144,7 @@ class Pages:
             today = date.today()
             selected_month = {"year": today.year, "month": today.month}
 
-<<<<<<< HEAD
-            with ui.column().classes("w-full max-w-7xl mx-auto px-4 py-6 gap-5"):
-=======
             with ui.column().classes(PAGE_CLASS):
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                 self._shell("Budget Tracker")
 
                 with ui.row().classes("w-full items-end gap-3"):
@@ -201,27 +175,6 @@ class Pages:
                             if summary.largest_expense_category
                             else "Noch keine Kategorie belastet"
                         )
-<<<<<<< HEAD
-                        with ui.element("div").classes("w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"):
-                            self._metric("Einnahmen", f"CHF {summary.income_chf:.2f}", "text-emerald-700", "Gebucht im Monat")
-                            self._metric("Ausgaben", f"CHF {summary.expenses_chf:.2f}", "text-red-700", "Gebucht im Monat")
-                            free_to_spend = summary.remaining_expense_budget_chf if summary.plan else summary.balance_chf
-                            free_class = "text-emerald-700" if free_to_spend >= 0 else "text-red-700"
-                            free_subtitle = "Restbudget" if summary.plan else "Saldo ohne Monatsplan"
-                            self._metric("Noch frei", f"CHF {free_to_spend:.2f}", free_class, free_subtitle)
-                            self._metric("Grösste Kategorie", largest_label, "text-blue-700", largest_subtitle)
-                            expense_delta = round(summary.expenses_chf - previous_summary.expenses_chf, 2)
-                            delta_class = "text-emerald-700" if expense_delta <= 0 else "text-red-700"
-                            delta_sign = "+" if expense_delta > 0 else ""
-                            self._metric("Monatsvergleich", f"{delta_sign}CHF {expense_delta:.2f}", delta_class, "Ausgaben vs. Vormonat")
-                            self._metric("Netto gespart", f"CHF {summary.savings_booked_chf:.2f}", "text-blue-700", "Umbuchungen Sparkonto")
-                            health_class = "text-emerald-700" if summary.budget_health_score >= 80 else "text-amber-700"
-                            if summary.budget_health_score < 60:
-                                health_class = "text-red-700"
-                            self._metric("Budget-Health", f"{summary.budget_health_score}/100", health_class, summary.budget_health_label)
-                            self._metric("Nettovermögen", f"CHF {summary.net_worth_chf:.2f}", "text-blue-700", "Budgetkonto plus Sparkonto")
-                            day_class = "text-emerald-700" if summary.available_per_day_chf >= 0 else "text-red-700"
-=======
                         with ui.element("div").classes(METRICS_GRID_CLASS):
                             self._metric("Einnahmen", f"CHF {summary.income_chf:.2f}", POSITIVE_CLASS, "Gebucht im Monat")
                             self._metric("Ausgaben", f"CHF {summary.expenses_chf:.2f}", NEGATIVE_CLASS, "Gebucht im Monat")
@@ -241,7 +194,6 @@ class Pages:
                             self._metric("Budget-Health", f"{summary.budget_health_score}/100", health_class, summary.budget_health_label)
                             self._metric("Nettovermögen", f"CHF {summary.net_worth_chf:.2f}", BLUE_CLASS, "Budgetkonto plus Sparkonto")
                             day_class = POSITIVE_CLASS if summary.available_per_day_chf >= 0 else NEGATIVE_CLASS
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                             self._metric("Pro Tag frei", f"CHF {summary.available_per_day_chf:.2f}", day_class, "Bis Monatsende")
 
                         if summary.plan and summary.spending_budget_used_pct >= 100:
@@ -249,20 +201,6 @@ class Pages:
                         elif summary.plan and summary.spending_budget_used_pct >= 80:
                             self._warning("Budget-Limite bald erreicht", "Du hast bereits über 80% deines Monatsbudgets genutzt.")
 
-<<<<<<< HEAD
-                        with ui.element("div").classes("w-full grid grid-cols-1 lg:grid-cols-2 gap-4"):
-                            with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-5 gap-3"):
-                                ui.label("Ausgaben-Verteilung").classes("text-xl font-bold leading-snug")
-                                self._pie_chart(summary.category_expenses)
-                            with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-5 gap-3"):
-                                ui.label("Monatsvergleich").classes("text-xl font-bold leading-snug")
-                                self._comparison_chart(summary, previous_summary)
-
-                        with ui.element("div").classes("w-full grid grid-cols-1 lg:grid-cols-2 gap-4 items-start"):
-                            with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-5 gap-4"):
-                                ui.label("Neue Buchung").classes("text-xl font-bold leading-snug")
-                                with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-2 gap-3"):
-=======
                         with ui.element("div").classes(CHARTS_GRID_CLASS):
                             with ui.column().classes(f"{PANEL_CLASS} gap-3"):
                                 ui.label("Ausgaben-Verteilung").classes(SECTION_TITLE_CLASS)
@@ -275,7 +213,6 @@ class Pages:
                             with ui.column().classes(f"{PANEL_CLASS} xl:col-span-2 gap-4"):
                                 ui.label("Neue Buchung").classes(SECTION_TITLE_CLASS)
                                 with ui.element("div").classes(SPLIT_GRID_CLASS):
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                     booking_date = ui.input("Datum", value=date.today().isoformat()).props("type=date").classes("w-full")
                                     kind = ui.select(list(TRANSACTION_KINDS), value="Ausgabe", label="Typ").classes("w-full")
                                 transfer_direction = ui.select(
@@ -316,11 +253,7 @@ class Pages:
                                 kind.on_value_change(lambda _: update_kind_controls())
                                 update_kind_controls()
 
-<<<<<<< HEAD
-                                with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-2 gap-3"):
-=======
                                 with ui.element("div").classes(SPLIT_GRID_CLASS):
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                     amount = ui.input("Betrag CHF", value="0.00").classes("w-full")
                                     note = ui.input("Notiz", value="").classes("w-full")
 
@@ -342,13 +275,8 @@ class Pages:
 
                                 ui.button("Buchung speichern", on_click=save_transaction).props("icon=save color=primary")
 
-<<<<<<< HEAD
-                            with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-5 gap-4"):
-                                ui.label("Monatsplan").classes("text-xl font-bold leading-snug")
-=======
                             with ui.column().classes(f"{PANEL_CLASS} gap-4"):
                                 ui.label("Monatsplan").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                 plan = summary.plan
                                 planned_income = ui.input("Geplante Einnahmen", value=f"{plan.planned_income_chf:.2f}" if plan else "0.00").classes("w-full")
                                 planned_expenses = ui.input("Geplante Ausgaben", value=f"{plan.planned_expenses_chf:.2f}" if plan else "0.00").classes("w-full")
@@ -377,7 +305,7 @@ class Pages:
                                     ui.button("CSV", on_click=export_csv).props("icon=table_view outline color=primary")
 
                                 if summary.plan:
-                                    budget_tone = "bg-red-600" if summary.spending_budget_used_pct > 100 else "bg-emerald-700"
+                                    budget_tone = "tone-red" if summary.spending_budget_used_pct > 100 else "tone-green"
                                     self._progress(
                                         "Budget genutzt",
                                         summary.spending_budget_used_pct,
@@ -393,54 +321,37 @@ class Pages:
                                         "Sparziel erreicht",
                                         summary.savings_goal_progress_pct,
                                         savings_detail,
-                                        "bg-blue-600",
+                                        "tone-blue",
                                     )
 
                                 ui.separator()
-<<<<<<< HEAD
-                                ui.label("Kontostand und Cashflow").classes("text-xl font-bold leading-snug")
-                                with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-2 gap-3"):
-=======
                                 ui.label("Kontostand und Cashflow").classes(SECTION_TITLE_CLASS)
                                 with ui.element("div").classes(SPLIT_GRID_CLASS):
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                     self._mini_fact("Budgetkonto", summary.budget_cash_chf)
                                     self._mini_fact("Sparkonto", summary.savings_balance_chf)
                                 self._mini_fact("Monats-Cashflow", summary.cash_flow_chf)
 
                                 ui.separator()
-<<<<<<< HEAD
-                                ui.label("Ausgaben nach Kategorie").classes("text-xl font-bold leading-snug")
-=======
                                 ui.label("Ausgaben nach Kategorie").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                 top_categories = sorted(summary.category_expenses.items(), key=lambda item: item[1], reverse=True)[:5]
                                 if not top_categories:
-                                    ui.label("Noch keine Ausgaben in diesem Monat.").classes("text-slate-500")
+                                    ui.label("Noch keine Ausgaben in diesem Monat.").classes("muted")
                                 for category_name, spent in top_categories:
                                     share = round((spent / summary.expenses_chf) * 100, 1) if summary.expenses_chf else 0.0
                                     self._category_bar(category_name, spent, share)
 
                                 ui.separator()
-<<<<<<< HEAD
-                                ui.label("Wiederkehrende Ausgaben").classes("text-xl font-bold leading-snug")
-=======
                                 ui.label("Wiederkehrende Ausgaben").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                 if not summary.recurring_expenses:
-                                    ui.label("Noch nicht genug Historie für sichere Erkennung.").classes("text-slate-500")
+                                    ui.label("Noch nicht genug Historie für sichere Erkennung.").classes("muted")
                                 for recurring in summary.recurring_expenses:
                                     ui.label(
                                         f"{recurring.name}: CHF {recurring.monthly_amount_chf:.2f}/Monat "
                                         f"(ca. CHF {recurring.yearly_amount_chf:.2f}/Jahr)"
-                                    ).classes("text-slate-500")
+                                    ).classes("muted")
 
                                 ui.separator()
-<<<<<<< HEAD
-                                ui.label("Spartipps").classes("text-xl font-bold leading-snug")
-=======
                                 ui.label("Spartipps").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                 with ui.element("ul").classes("tip-list"):
                                     for tip in self._spending_tips(summary, previous_summary):
                                         with ui.element("li").classes("mb-1"):
@@ -448,13 +359,8 @@ class Pages:
 
                     table_container.clear()
                     with table_container:
-<<<<<<< HEAD
-                        with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-5 w-full gap-3"):
-                            ui.label("Monatliche Buchungen").classes("text-xl font-bold leading-snug")
-=======
                         with ui.column().classes(f"{PANEL_CLASS} w-full gap-3"):
                             ui.label("Monatliche Buchungen").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                             all_rows = [
                                 {
                                     "id": transaction.id,
@@ -477,17 +383,10 @@ class Pages:
                                 {"name": "amount", "label": "Betrag CHF", "field": "amount", "align": "right"},
                                 {"name": "actions", "label": "", "field": "actions", "align": "center"},
                             ]
-<<<<<<< HEAD
-                            with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-2 gap-3"):
-                                search_input = ui.input("Suche", placeholder="Notiz, Kategorie, Typ").props("clearable").classes("w-full")
-                                kind_filter = ui.select(["Alle", *TRANSACTION_KINDS], value="Alle", label="Typ filtern").classes("w-full")
-                            with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-2 gap-3"):
-=======
                             with ui.element("div").classes(SPLIT_GRID_CLASS):
                                 search_input = ui.input("Suche", placeholder="Notiz, Kategorie, Typ").props("clearable").classes("w-full")
                                 kind_filter = ui.select(["Alle", *TRANSACTION_KINDS], value="Alle", label="Typ filtern").classes("w-full")
                             with ui.element("div").classes(SPLIT_GRID_CLASS):
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                                 category_options = ["Alle", *sorted({row["category"] for row in all_rows})]
                                 category_filter = ui.select(category_options, value="Alle", label="Kategorie filtern").classes("w-full")
                                 ui.label("").classes("w-full")
@@ -508,7 +407,7 @@ class Pages:
 
                                 filtered_table.clear()
                                 with filtered_table:
-                                    ui.label(f"{len(filtered_rows)} von {len(all_rows)} Buchungen").classes("text-slate-500")
+                                    ui.label(f"{len(filtered_rows)} von {len(all_rows)} Buchungen").classes("muted")
                                     table = ui.table(columns=columns, rows=filtered_rows, row_key="id").classes("transaction-table w-full")
                                     table.props("flat bordered :rows-per-page-options='[10, 20, 50]'")
                                     table.add_slot(
@@ -537,13 +436,8 @@ class Pages:
                     categories = self.budget.categories()
                     current_category = transaction.category.name if transaction.category else (categories[0] if categories else None)
                     dialog = ui.dialog()
-<<<<<<< HEAD
-                    with dialog, ui.card().classes("edit-dialog gap-4"):
-                        ui.label("Buchung bearbeiten").classes("text-xl font-bold leading-snug")
-=======
                     with dialog, ui.card().classes("edit-dialog rounded-lg gap-4"):
                         ui.label("Buchung bearbeiten").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                         edit_date = ui.input("Datum", value=transaction.booking_date.isoformat()).props("type=date").classes("w-full")
                         edit_kind = ui.select(list(TRANSACTION_KINDS), value=transaction.kind, label="Typ").classes("w-full")
                         edit_transfer_direction = ui.select(
@@ -597,17 +491,10 @@ class Pages:
         def categories_page() -> None:
             if not self._guard():
                 return
-<<<<<<< HEAD
-            with ui.column().classes("w-full max-w-7xl mx-auto px-4 py-6 gap-5"):
-                self._shell("Kategorien")
-                with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-5 gap-4"):
-                    ui.label("Kategorien verwalten").classes("text-xl font-bold leading-snug")
-=======
             with ui.column().classes(PAGE_CLASS):
                 self._shell("Kategorien")
                 with ui.column().classes(f"{PANEL_CLASS} gap-4"):
                     ui.label("Kategorien verwalten").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                     name = ui.input("Neue Kategorie").classes("w-full max-w-md")
                     list_container = ui.column().classes("w-full")
 
@@ -638,17 +525,10 @@ class Pages:
         def settings_page() -> None:
             if not self._guard():
                 return
-<<<<<<< HEAD
-            with ui.column().classes("w-full max-w-7xl mx-auto px-4 py-6 gap-5"):
-                self._shell("Einstellungen")
-                with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-5 gap-4"):
-                    ui.label("Passwort ändern").classes("text-xl font-bold leading-snug")
-=======
             with ui.column().classes(PAGE_CLASS):
                 self._shell("Einstellungen")
                 with ui.column().classes(f"{PANEL_CLASS} gap-4"):
                     ui.label("Passwort ändern").classes(SECTION_TITLE_CLASS)
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
                     current = ui.input("Aktuelles Passwort", password=True, password_toggle_button=True).classes("w-full max-w-md")
                     new = ui.input("Neues Passwort", password=True, password_toggle_button=True).classes("w-full max-w-md")
 
@@ -672,21 +552,15 @@ class Pages:
 
     @staticmethod
     def _warning(title: str, message: str) -> None:
-<<<<<<< HEAD
-        with ui.column().classes("bg-orange-50 border border-orange-200 rounded-2xl shadow-md p-5 gap-1"):
-            ui.label(title).classes("text-xl font-bold leading-snug text-amber-700")
-            ui.label(message).classes("text-slate-500")
-=======
         with ui.column().classes(f"{PANEL_CLASS} warning-panel gap-1"):
             ui.label(title).classes(f"{SECTION_TITLE_CLASS} {AMBER_CLASS}")
             ui.label(message).classes("muted")
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
 
     @staticmethod
     def _pie_chart(category_expenses: dict[str, float]) -> None:
         data = [{"name": name, "value": value} for name, value in sorted(category_expenses.items(), key=lambda item: item[1], reverse=True)]
         if not data:
-            ui.label("Noch keine Ausgaben für ein Diagramm.").classes("text-slate-500")
+            ui.label("Noch keine Ausgaben für ein Diagramm.").classes("muted")
             return
         ui.echart(
             {
@@ -757,36 +631,26 @@ class Pages:
 
     @staticmethod
     def _metric(label: str, value: str, value_class: str, subtitle: str = "") -> None:
-<<<<<<< HEAD
-        with ui.column().classes("bg-white border border-slate-200 rounded-2xl shadow-md p-4 min-h-28 gap-1"):
-            ui.label(label).classes("text-slate-500 text-sm font-bold uppercase")
-            ui.label(value).classes(f"text-2xl font-bold leading-tight {value_class}")
-=======
         with ui.column().classes(METRIC_CLASS):
             ui.label(label).classes("metric-label")
             ui.label(value).classes(f"metric-value {value_class}")
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
             if subtitle:
-                ui.label(subtitle).classes("text-slate-500 text-sm leading-tight")
+                ui.label(subtitle).classes("metric-subtitle")
 
     @staticmethod
     def _progress(label: str, percent: float, detail: str, tone: str) -> None:
         safe_percent = max(0.0, min(percent, 100.0))
-        with ui.column().classes("w-full gap-2"):
+        with ui.column().classes("progress-block w-full"):
             with ui.row().classes("w-full items-center justify-between"):
                 ui.label(label).classes("font-bold")
-                ui.label(f"{percent:.1f}%").classes("text-slate-500")
+                ui.label(f"{percent:.1f}%").classes("muted")
             with ui.element("div").classes("progress-track"):
                 ui.element("div").classes(f"progress-fill {tone}").style(f"width: {safe_percent}%;")
-            ui.label(detail).classes("text-slate-500 text-xs")
+            ui.label(detail).classes("muted text-xs")
 
     @staticmethod
     def _mini_fact(label: str, amount: float) -> None:
-<<<<<<< HEAD
-        amount_class = "text-emerald-700" if amount >= 0 else "text-red-700"
-=======
         amount_class = POSITIVE_CLASS if amount >= 0 else NEGATIVE_CLASS
->>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
         with ui.column().classes("gap-1"):
             ui.label(label).classes("font-bold")
             ui.label(f"CHF {amount:.2f}").classes(amount_class)
@@ -794,9 +658,9 @@ class Pages:
     @staticmethod
     def _category_bar(category_name: str, spent: float, share: float) -> None:
         safe_share = max(0.0, min(share, 100.0))
-        with ui.column().classes("w-full gap-2"):
+        with ui.column().classes("progress-block w-full"):
             with ui.row().classes("w-full items-center justify-between gap-2"):
                 ui.label(category_name).classes("font-bold")
-                ui.label(f"CHF {spent:.2f} · {share:.1f}%").classes("text-slate-500")
+                ui.label(f"CHF {spent:.2f} · {share:.1f}%").classes("muted")
             with ui.element("div").classes("progress-track"):
-                ui.element("div").classes("progress-fill bg-amber-600").style(f"width: {safe_share}%;")
+                ui.element("div").classes("progress-fill tone-amber").style(f"width: {safe_share}%;")
