@@ -91,10 +91,198 @@ Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die 
 - **UI:** NiceGUI-Seiten und Controller für Dashboard, Formulare, Tabellen und Aktionen.
 - **Tests:** Unit-, Datenbank- und Integrationstests.
 
+<<<<<<< HEAD
+=======
+## ER-Diagramm
+
+```mermaid
+erDiagram
+    CATEGORY ||--o{ TRANSACTION : "hat Buchungen"
+
+    CATEGORY {
+        int id PK
+        string name
+    }
+
+    TRANSACTION {
+        int id PK
+        date booking_date
+        string kind
+        int category_id FK
+        float amount_chf
+        string note
+        string transfer_direction
+        datetime created_at
+    }
+
+    MONTHLY_BUDGET {
+        int id PK
+        int year
+        int month
+        float planned_income_chf
+        float planned_expenses_chf
+        float savings_goal_chf
+    }
+
+    USER_ACCOUNT {
+        int id PK
+        string username
+        string password_hash
+        datetime created_at
+    }
+```
+
+### Erklärung des ER-Diagramms
+
+- **Category** speichert die Buchungskategorien wie Miete, Lebensmittel, Transport oder Sparkonto.
+- **Transaction** speichert einzelne Buchungen. Jede Buchung gehört genau zu einer Kategorie.
+- **MonthlyBudget** speichert die geplanten Werte pro Monat: geplante Einnahmen, geplante Ausgaben und Sparziel.
+- **UserAccount** speichert den lokalen Benutzer für den Passwortschutz.
+- Die Beziehung zwischen **Category** und **Transaction** ist eine 1:n-Beziehung: Eine Kategorie kann viele Buchungen haben, eine Buchung hat aber nur eine Kategorie.
+
+## Klassendiagramm
+
+```mermaid
+classDiagram
+    class Category {
+        +int id
+        +str name
+    }
+
+    class Transaction {
+        +int id
+        +date booking_date
+        +str kind
+        +int category_id
+        +float amount_chf
+        +str note
+        +str transfer_direction
+        +signed_amount_chf
+    }
+
+    class MonthlyBudget {
+        +int id
+        +int year
+        +int month
+        +float planned_income_chf
+        +float planned_expenses_chf
+        +float savings_goal_chf
+    }
+
+    class UserAccount {
+        +int id
+        +str username
+        +str password_hash
+    }
+
+    class Database {
+        +engine
+        +init_schema_and_seed()
+        +session_scope()
+    }
+
+    class BaseDAO {
+        +engine
+        +session()
+    }
+
+    class CategoryDAO {
+        +list_all()
+        +get_by_name()
+        +create()
+    }
+
+    class TransactionDAO {
+        +create()
+        +get()
+        +update()
+        +delete()
+        +list_for_period()
+        +list_until()
+    }
+
+    class MonthlyBudgetDAO {
+        +get()
+        +save()
+    }
+
+    class UserAccountDAO {
+        +get_admin()
+        +create_admin()
+        +update_password()
+    }
+
+    class BudgetService {
+        +add_transaction()
+        +update_transaction()
+        +delete_transaction()
+        +save_plan()
+        +monthly_summary()
+    }
+
+    class PasswordService {
+        +hash_password()
+        +verify()
+        +validate_new_password()
+    }
+
+    class ReportService {
+        +create_monthly_pdf()
+        +create_monthly_csv()
+    }
+
+    class AuthController {
+        +login()
+        +logout()
+        +change_password()
+    }
+
+    class BudgetController {
+        +add_transaction()
+        +update_transaction()
+        +delete_transaction()
+        +summary()
+        +export_pdf()
+        +export_csv()
+    }
+
+    class Pages {
+        +register()
+    }
+
+    Category "1" --> "0..*" Transaction
+    BaseDAO <|-- CategoryDAO
+    BaseDAO <|-- TransactionDAO
+    BaseDAO <|-- MonthlyBudgetDAO
+    BaseDAO <|-- UserAccountDAO
+    BudgetService --> TransactionDAO
+    BudgetService --> CategoryDAO
+    BudgetService --> MonthlyBudgetDAO
+    AuthController --> UserAccountDAO
+    AuthController --> PasswordService
+    BudgetController --> BudgetService
+    BudgetController --> ReportService
+    Pages --> AuthController
+    Pages --> BudgetController
+```
+
+### Erklärung des Klassendiagramms
+
+- **Pages** enthält die NiceGUI-Seiten und bildet die sichtbare Oberfläche der App.
+- **AuthController**, **BudgetController** und **CategoryController** verbinden die Oberfläche mit der Applikationslogik.
+- **BudgetService** verarbeitet Buchungen, Monatspläne, Umbuchungen, Auswertungen und Kategorien.
+- **ReportService** erstellt PDF-Berichte und CSV-Exporte.
+- **PasswordService** übernimmt Passwort-Hashing, Passwortprüfung und Passwortvalidierung.
+- Die DAO-Klassen kapseln den Datenbankzugriff, damit die Oberfläche nicht direkt mit der Datenbank arbeitet.
+- Die Model-Klassen **Category**, **Transaction**, **MonthlyBudget** und **UserAccount** bilden die Datenbanktabellen ab.
+- Dadurch bleiben Präsentationsschicht, Businesslogik und Datenbankzugriff klar getrennt.
+
+>>>>>>> 7739468 (Apply Tailwind-oriented UI polish)
 ## Design-Entscheidungen
 
 - **Schichtenarchitektur:** Oberfläche, Controller, Services, Datenzugriff und Modelle sind getrennt. Dadurch bleibt die Businesslogik testbar.
 - **NiceGUI als Browser-Frontend:** Die App läuft im Browser, wird aber serverseitig mit Python aufgebaut. Das passt zur Modulvorgabe.
+- **Tailwind-orientiertes Styling:** Layout, Karten, Abstände, Farben und responsive Grids werden mit Tailwind-Utility-Klassen umgesetzt. Eigenes CSS wird nur dort ergänzt, wo NiceGUI-spezifische Details oder Progress-Balken sauberer steuerbar sind.
 - **SQLite + SQLModel:** SQLite ist für eine lokale Budget-App einfach zu starten. SQLModel wird als ORM verwendet.
 - **Sparkonto als Umbuchung:** Sparen wird nicht als normale Ausgabe behandelt. Stattdessen gibt es Umbuchungen zwischen Monatsbudget und Sparkonto.
 - **Seed-Daten:** Neue Benutzer sehen sofort ein vollständiges Beispielbudget. Dadurch können Dashboard, Diagramme und Filter direkt getestet werden.
@@ -109,6 +297,35 @@ Die App übernimmt bewusst passende Ideen aus bekannten Budgetplanern:
 - **Copilot Money:** Dashboard-Kennzahlen, Filter, Cashflow, Sparkonto-Logik, wiederkehrende Ausgaben und einfache automatische Hinweise.
 
 Nicht umgesetzt sind Bank-Sync, echte Mehrbenutzer-Synchronisation, Investments und automatische Bank-Importe. Diese Punkte wären für ein Schulprojekt deutlich grösser und werden deshalb als Erweiterungen betrachtet.
+
+## Oberfläche, Dashboard, Diagramme und Export
+
+Die Oberfläche wurde mit NiceGUI umgesetzt. Die UI-Komponenten werden in Python erstellt und im Browser angezeigt. Für das Design werden NiceGUI-Komponenten mit Tailwind-Utility-Klassen kombiniert, zum Beispiel für responsive Grids, Karten, Schatten, Abstände und Farbabstufungen. Eigenes CSS wird ergänzend für projektbezogene Details wie Progress-Balken, Tabellen und kleine Textstile verwendet. Dadurch wirkt die App nicht mehr wie eine unveränderte Standard-NiceGUI-Oberfläche.
+
+Das Dashboard ist die zentrale Übersichtsseite der Anwendung. Es fasst die wichtigsten Budgetinformationen eines ausgewählten Monats zusammen:
+
+- Einnahmen und Ausgaben
+- Monats-Cashflow
+- Budgetkonto und Sparkonto
+- Nettovermögen
+- Restbudget und Tagesbudget
+- Budget-Health-Score
+- Sparziel-Fortschritt
+- grösste Ausgabenkategorie mit Betrag und Prozentanteil
+- wiederkehrende Ausgaben
+- Monatsvergleich
+
+Die Diagramme unterstützen die visuelle Auswertung:
+
+- **Ausgaben-Verteilung:** zeigt, welche Kategorien den grössten Anteil an den Ausgaben haben.
+- **Monatsvergleich:** vergleicht den aktuellen Monat mit dem Vormonat.
+
+Die Export-Funktionen werden direkt über die Oberfläche ausgelöst:
+
+- **PDF-Bericht:** erstellt einen Monatsbericht mit Kennzahlen und Buchungen.
+- **CSV-Export:** exportiert die Buchungen eines Monats als Tabelle.
+
+Die Oberfläche ruft dafür Controller und Services auf. Die Dateierstellung selbst liegt im **ReportService**, damit UI und Businesslogik getrennt bleiben.
 
 ## Projektmanagement und Arbeitsaufteilung
 
@@ -132,8 +349,6 @@ Die Entwicklung sollte über GitHub-Commits nachvollziehbar sein. Für die Präs
 3. Abhängigkeiten installieren: `pip install -r requirements.txt`
 4. App starten: `python -m budget_tracker_app`
 5. Im Browser öffnen: `http://localhost:8080`
-
-Falls die mitgelieferte lokale Umgebung verwendet wird, kann direkt `.\.venv312\Scripts\Activate.ps1` genutzt werden.
 
 ## Tests
 
