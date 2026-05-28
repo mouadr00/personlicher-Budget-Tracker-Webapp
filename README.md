@@ -172,14 +172,14 @@ Dieser Projektbeitrag befindet sich hauptsächlich in der Präsentationsschicht 
 
 ### Umgesetzte Aufgaben
 
-* Aufbau und Anpassung der NiceGUI-Seiten in `budget_tracker_app/ui/pages.py`
-* Gestaltung der Benutzeroberfläche mit Tailwind-Utility-Klassen über `.classes()`
-* Verbesserung von Layout, Abständen, Karten, Typografie, Farben und responsiven Bereichen
-* Umsetzung des Dashboard-Aufbaus mit Kennzahlen, Tabellen und Auswertungsbereichen
-* Darstellung von Diagrammen für Ausgabenverteilung und Monatsvergleich
-* Einbindung der Export-Aktionen für PDF-Berichte und CSV-Dateien in die Benutzeroberfläche
-* Verbesserung der Benutzerführung durch klare Seitenbereiche, Formulare, Tabellen und Statusmeldungen
-* Ergänzung und Pflege der README-Dokumentation mit Architektur-, Design- und Diagramminformationen
+* NiceGUI-Seiten in `budget_tracker_app/ui/pages.py` wurden aufgebaut und angepasst
+* Die Benutzeroberfläche wurde mit Tailwind-Utility-Klassen über `.classes()` gestaltet
+* Layout, Abstände, Karten, Typografie, Farben und responsive Bereiche wurden umgesetzt
+* Das Dashboard wurde mit Kennzahlen, Tabellen und Auswertungsbereichen aufgebaut
+* Diagramme für Ausgabenverteilung und Monatsvergleich wurden dargestellt
+* Export-Aktionen für PDF-Berichte und CSV-Dateien wurden in die Benutzeroberfläche eingebunden
+* Die Benutzerführung wurde durch klare Seitenbereiche, Formulare, Tabellen und Statusmeldungen verbessert
+* Die README-Dokumentation wurde mit Architektur-, Design- und Diagramminformationen ergänzt und gepflegt
 
 ### NiceGUI- und Tailwind-Design
 
@@ -190,7 +190,7 @@ Beispiele für verwendete Tailwind-Klassen:
 | Bereich           | Verwendete Klassen                                                                      |
 | ----------------- | --------------------------------------------------------------------------------------- |
 | Layout            | `grid`, `flex`, `w-full`, `max-w-7xl`, `mx-auto`                                        |
-| Responsive Design | `grid-cols-1`, `sm:grid-cols-2`, `lg:grid-cols-2`, `lg:grid-cols-3`, `xl:grid-cols-4`   |
+| Responsive Design | `grid-cols-1`                                                                           |
 | Abstände          | `p-4`, `p-5`, `px-4`, `py-6`, `gap-3`, `gap-4`                                          |
 | Karten / Panels   | `bg-white`, `border`, `rounded-2xl`, `shadow-md`                                        |
 | Typografie        | `text-sm`, `text-xl`, `text-2xl`, `text-3xl`, `font-bold`, `font-semibold`              |
