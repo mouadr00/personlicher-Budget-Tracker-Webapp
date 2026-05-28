@@ -91,6 +91,171 @@ Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die 
 - **UI:** NiceGUI-Seiten und Controller für Dashboard, Formulare, Tabellen und Aktionen.
 - **Tests:** Unit-, Datenbank- und Integrationstests.
 
+## ER-Diagramm
+
+```mermaid
+erDiagram
+    CATEGORY ||--o{ TRANSACTION : "hat Buchungen"
+
+    CATEGORY {
+        int id PK
+        string name
+    }
+
+    TRANSACTION {
+        int id PK
+        date booking_date
+        string kind
+        int category_id FK
+        float amount_chf
+        string note
+        string transfer_direction
+        datetime created_at
+    }
+
+    MONTHLY_BUDGET {
+        int id PK
+        int year
+        int month
+        float planned_income_chf
+        float planned_expenses_chf
+        float savings_goal_chf
+    }
+
+    USER_ACCOUNT {
+        int id PK
+        string username
+        string password_hash
+        datetime created_at
+    }
+```
+
+## Klassendiagramm
+
+```mermaid
+classDiagram
+    class Category {
+        +int id
+        +str name
+    }
+
+    class Transaction {
+        +int id
+        +date booking_date
+        +str kind
+        +int category_id
+        +float amount_chf
+        +str note
+        +str transfer_direction
+        +signed_amount_chf
+    }
+
+    class MonthlyBudget {
+        +int id
+        +int year
+        +int month
+        +float planned_income_chf
+        +float planned_expenses_chf
+        +float savings_goal_chf
+    }
+
+    class UserAccount {
+        +int id
+        +str username
+        +str password_hash
+    }
+
+    class Database {
+        +engine
+        +init_schema_and_seed()
+        +session_scope()
+    }
+
+    class BaseDAO {
+        +engine
+        +session()
+    }
+
+    class CategoryDAO {
+        +list_all()
+        +get_by_name()
+        +create()
+    }
+
+    class TransactionDAO {
+        +create()
+        +get()
+        +update()
+        +delete()
+        +list_for_period()
+        +list_until()
+    }
+
+    class MonthlyBudgetDAO {
+        +get()
+        +save()
+    }
+
+    class UserAccountDAO {
+        +get_admin()
+        +create_admin()
+        +update_password()
+    }
+
+    class BudgetService {
+        +add_transaction()
+        +update_transaction()
+        +delete_transaction()
+        +save_plan()
+        +monthly_summary()
+    }
+
+    class PasswordService {
+        +hash_password()
+        +verify()
+        +validate_new_password()
+    }
+
+    class ReportService {
+        +create_monthly_pdf()
+        +create_monthly_csv()
+    }
+
+    class AuthController {
+        +login()
+        +logout()
+        +change_password()
+    }
+
+    class BudgetController {
+        +add_transaction()
+        +update_transaction()
+        +delete_transaction()
+        +summary()
+        +export_pdf()
+        +export_csv()
+    }
+
+    class Pages {
+        +register()
+    }
+
+    Category "1" --> "0..*" Transaction
+    BaseDAO <|-- CategoryDAO
+    BaseDAO <|-- TransactionDAO
+    BaseDAO <|-- MonthlyBudgetDAO
+    BaseDAO <|-- UserAccountDAO
+    BudgetService --> TransactionDAO
+    BudgetService --> CategoryDAO
+    BudgetService --> MonthlyBudgetDAO
+    AuthController --> UserAccountDAO
+    AuthController --> PasswordService
+    BudgetController --> BudgetService
+    BudgetController --> ReportService
+    Pages --> AuthController
+    Pages --> BudgetController
+```
+
 ## Design-Entscheidungen
 
 - **Schichtenarchitektur:** Oberfläche, Controller, Services, Datenzugriff und Modelle sind getrennt. Dadurch bleibt die Businesslogik testbar.

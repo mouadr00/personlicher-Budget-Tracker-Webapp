@@ -114,7 +114,34 @@ class Pages:
     def _register_login(self) -> None:
         @ui.page("/login")
         def login_page() -> None:
-            ui.add_head_html("<style>body { background: #f4f7fb; }</style>")
+            ui.add_head_html(
+                """
+                <style>
+                body {
+                    background: #f4f7fb;
+                    color: #172033;
+                    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                }
+                .page-title { font-size: 1.85rem; line-height: 1.15; font-weight: 750; }
+                .muted { color: #687385; }
+                .login-shell {
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 24px;
+                }
+                .login-panel {
+                    width: min(420px, 100%);
+                    background: white;
+                    border: 1px solid #dce3ec;
+                    border-radius: 8px;
+                    padding: 26px;
+                    box-shadow: 0 18px 36px rgba(28, 42, 66, 0.12);
+                }
+                </style>
+                """
+            )
             with ui.element("div").classes("login-shell"):
                 with ui.column().classes("login-panel gap-4"):
                     ui.label("Budget Tracker").classes("page-title")
