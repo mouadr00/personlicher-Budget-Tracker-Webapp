@@ -91,171 +91,6 @@ Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die 
 - **UI:** NiceGUI-Seiten und Controller für Dashboard, Formulare, Tabellen und Aktionen.
 - **Tests:** Unit-, Datenbank- und Integrationstests.
 
-## ER-Diagramm
-
-```mermaid
-erDiagram
-    CATEGORY ||--o{ TRANSACTION : "hat Buchungen"
-
-    CATEGORY {
-        int id PK
-        string name
-    }
-
-    TRANSACTION {
-        int id PK
-        date booking_date
-        string kind
-        int category_id FK
-        float amount_chf
-        string note
-        string transfer_direction
-        datetime created_at
-    }
-
-    MONTHLY_BUDGET {
-        int id PK
-        int year
-        int month
-        float planned_income_chf
-        float planned_expenses_chf
-        float savings_goal_chf
-    }
-
-    USER_ACCOUNT {
-        int id PK
-        string username
-        string password_hash
-        datetime created_at
-    }
-```
-
-## Klassendiagramm
-
-```mermaid
-classDiagram
-    class Category {
-        +int id
-        +str name
-    }
-
-    class Transaction {
-        +int id
-        +date booking_date
-        +str kind
-        +int category_id
-        +float amount_chf
-        +str note
-        +str transfer_direction
-        +signed_amount_chf
-    }
-
-    class MonthlyBudget {
-        +int id
-        +int year
-        +int month
-        +float planned_income_chf
-        +float planned_expenses_chf
-        +float savings_goal_chf
-    }
-
-    class UserAccount {
-        +int id
-        +str username
-        +str password_hash
-    }
-
-    class Database {
-        +engine
-        +init_schema_and_seed()
-        +session_scope()
-    }
-
-    class BaseDAO {
-        +engine
-        +session()
-    }
-
-    class CategoryDAO {
-        +list_all()
-        +get_by_name()
-        +create()
-    }
-
-    class TransactionDAO {
-        +create()
-        +get()
-        +update()
-        +delete()
-        +list_for_period()
-        +list_until()
-    }
-
-    class MonthlyBudgetDAO {
-        +get()
-        +save()
-    }
-
-    class UserAccountDAO {
-        +get_admin()
-        +create_admin()
-        +update_password()
-    }
-
-    class BudgetService {
-        +add_transaction()
-        +update_transaction()
-        +delete_transaction()
-        +save_plan()
-        +monthly_summary()
-    }
-
-    class PasswordService {
-        +hash_password()
-        +verify()
-        +validate_new_password()
-    }
-
-    class ReportService {
-        +create_monthly_pdf()
-        +create_monthly_csv()
-    }
-
-    class AuthController {
-        +login()
-        +logout()
-        +change_password()
-    }
-
-    class BudgetController {
-        +add_transaction()
-        +update_transaction()
-        +delete_transaction()
-        +summary()
-        +export_pdf()
-        +export_csv()
-    }
-
-    class Pages {
-        +register()
-    }
-
-    Category "1" --> "0..*" Transaction
-    BaseDAO <|-- CategoryDAO
-    BaseDAO <|-- TransactionDAO
-    BaseDAO <|-- MonthlyBudgetDAO
-    BaseDAO <|-- UserAccountDAO
-    BudgetService --> TransactionDAO
-    BudgetService --> CategoryDAO
-    BudgetService --> MonthlyBudgetDAO
-    AuthController --> UserAccountDAO
-    AuthController --> PasswordService
-    BudgetController --> BudgetService
-    BudgetController --> ReportService
-    Pages --> AuthController
-    Pages --> BudgetController
-```
-
 ## Design-Entscheidungen
 
 - **Schichtenarchitektur:** Oberfläche, Controller, Services, Datenzugriff und Modelle sind getrennt. Dadurch bleibt die Businesslogik testbar.
@@ -330,3 +165,321 @@ Folgende Punkte sind bewusst als Erweiterung eingeordnet, weil sie ein grössere
 - Rollen-System, z.B. Admin darf bearbeiten, Viewer darf nur ansehen
 - Benutzerprofil mit mehreren Benutzern
 - Benachrichtigungen mit gespeicherten Regeln
+
+## NiceGUI-Oberfläche, Dashboard, Diagramme, Export und Dokumentation
+
+Dieser Projektbeitrag befindet sich hauptsächlich in der Präsentationsschicht der Anwendung. Der Schwerpunkt liegt auf der NiceGUI-Oberfläche, dem Tailwind-Design, dem Dashboard, den Diagrammen, der Export-Auslösung über die Benutzeroberfläche und der README-Dokumentation.
+
+### Umgesetzte Aufgaben
+
+* Aufbau und Anpassung der NiceGUI-Seiten in `budget_tracker_app/ui/pages.py`
+* Gestaltung der Benutzeroberfläche mit Tailwind-Utility-Klassen über `.classes()`
+* Verbesserung von Layout, Abständen, Karten, Typografie, Farben und responsiven Bereichen
+* Umsetzung des Dashboard-Aufbaus mit Kennzahlen, Tabellen und Auswertungsbereichen
+* Darstellung von Diagrammen für Ausgabenverteilung und Monatsvergleich
+* Einbindung der Export-Aktionen für PDF-Berichte und CSV-Dateien in die Benutzeroberfläche
+* Verbesserung der Benutzerführung durch klare Seitenbereiche, Formulare, Tabellen und Statusmeldungen
+* Ergänzung und Pflege der README-Dokumentation mit Architektur-, Design- und Diagramminformationen
+
+### NiceGUI- und Tailwind-Design
+
+Die Oberfläche wurde mit NiceGUI umgesetzt. Die UI-Komponenten werden in Python erstellt und im Browser dargestellt. Für das visuelle Design werden hauptsächlich Tailwind-Utility-Klassen direkt über `.classes()` verwendet.
+
+Beispiele für verwendete Tailwind-Klassen:
+
+| Bereich           | Verwendete Klassen                                                                      |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| Layout            | `grid`, `flex`, `w-full`, `max-w-7xl`, `mx-auto`                                        |
+| Responsive Design | `grid-cols-1`, `sm:grid-cols-2`, `lg:grid-cols-2`, `lg:grid-cols-3`, `xl:grid-cols-4`   |
+| Abstände          | `p-4`, `p-5`, `px-4`, `py-6`, `gap-3`, `gap-4`                                          |
+| Karten / Panels   | `bg-white`, `border`, `rounded-2xl`, `shadow-md`                                        |
+| Typografie        | `text-sm`, `text-xl`, `text-2xl`, `text-3xl`, `font-bold`, `font-semibold`              |
+| Farben            | `text-slate-500`, `text-emerald-700`, `text-red-700`, `text-blue-700`, `text-amber-700` |
+
+Eigenes CSS wird nur für spezielle Elemente verwendet, bei denen Tailwind-Klassen allein nicht sinnvoll ausreichen, zum Beispiel für Progress-Bars oder Tabellenbereiche. Der Hauptteil des Designs bleibt dadurch direkt im NiceGUI-Code sichtbar.
+
+### Dashboard
+
+Das Dashboard bildet die zentrale Übersichtsseite der Anwendung. Es fasst die wichtigsten Budgetinformationen eines ausgewählten Monats zusammen.
+
+Enthaltene Dashboard-Bereiche:
+
+* Einnahmen
+* Ausgaben
+* Cashflow
+* Budgetkonto
+* Sparkonto
+* Nettovermögen
+* Restbudget
+* Tagesbudget
+* Budget-Health-Score
+* Sparziel-Fortschritt
+* grösste Ausgabenkategorie
+* wiederkehrende Ausgaben
+* Monatsvergleich
+
+Die Darstellung erfolgt über Karten, Tabellen, Fortschrittsanzeigen und Diagramme. Dadurch können wichtige Finanzinformationen schnell erfasst werden, ohne dass alle Buchungen einzeln analysiert werden müssen.
+
+### Diagramme
+
+Die Diagramme unterstützen die visuelle Auswertung der Budgetdaten.
+
+Umgesetzte Diagramme:
+
+1. **Ausgabenverteilung nach Kategorie**
+
+   * zeigt die Verteilung der Ausgaben im ausgewählten Monat
+   * macht sichtbar, welche Kategorien den grössten Anteil an den Ausgaben haben
+
+2. **Monatsvergleich**
+
+   * zeigt Einnahmen, Ausgaben und Sparverhalten im Vergleich
+   * unterstützt die Analyse der finanziellen Entwicklung über mehrere Monate
+
+Die Diagramme ergänzen die tabellarische Darstellung und verbessern die Verständlichkeit der Budgetauswertung.
+
+### Export
+
+Die Export-Funktionen werden über die NiceGUI-Oberfläche ausgelöst.
+
+Umgesetzte Exporte:
+
+| Export      | Beschreibung                                                  |
+| ----------- | ------------------------------------------------------------- |
+| PDF-Bericht | Erstellt einen Monatsbericht mit Kennzahlen und Transaktionen |
+| CSV-Export  | Exportiert Buchungen eines Monats in eine CSV-Datei           |
+
+Die Benutzeroberfläche stellt die Buttons und Rückmeldungen für den Export bereit. Die eigentliche Dateierstellung erfolgt über den `ReportService`.
+
+### Abgrenzung des Beitrags
+
+Die Oberfläche greift nicht direkt auf die Datenbank zu. Benutzeraktionen werden in der NiceGUI-Oberfläche ausgelöst und danach über Controller und Services verarbeitet. Dadurch bleibt die Präsentationsschicht von Businesslogik und Datenbankzugriff getrennt.
+
+Betroffene Bereiche:
+
+* `budget_tracker_app/ui/pages.py`
+* Dashboard-Layout
+* Diagramm-Darstellung
+* Export-Buttons und Export-Benutzerführung
+* Tailwind-Design
+* README-Dokumentation
+
+## ER-Diagramm
+
+Das folgende ER-Diagramm zeigt das Datenmodell der Anwendung. Es dokumentiert Tabellen, Primärschlüssel, Fremdschlüssel und die Beziehung zwischen Kategorien und Buchungen.
+
+```mermaid
+erDiagram
+    CATEGORY ||--o{ TRANSACTION : categorizes
+
+    CATEGORY {
+        int id PK
+        string name
+    }
+
+    TRANSACTION {
+        int id PK
+        date booking_date
+        string kind
+        int category_id FK
+        float amount_chf
+        string note
+        string transfer_direction
+        datetime created_at
+    }
+
+    MONTHLY_BUDGET {
+        int id PK
+        int year
+        int month
+        float planned_income_chf
+        float planned_expenses_chf
+        float savings_goal_chf
+    }
+
+    USER_ACCOUNT {
+        int id PK
+        string username
+        string password_hash
+        datetime created_at
+    }
+```
+
+### Erklärung des ER-Diagramms
+
+* `Category` speichert die Kategorien für Buchungen.
+* `Transaction` speichert Einnahmen, Ausgaben und Umbuchungen.
+* Jede `Transaction` verweist über `category_id` auf genau eine `Category`.
+* `MonthlyBudget` speichert geplante Monatswerte wie Einnahmen, Ausgaben und Sparziel.
+* `UserAccount` speichert den lokalen Benutzer für den Passwortschutz.
+* Die Beziehung zwischen `Category` und `Transaction` ist eine 1:n-Beziehung: Eine Kategorie kann mehrere Buchungen enthalten, eine Buchung gehört jedoch zu genau einer Kategorie.
+
+## Klassendiagramm
+
+Das Klassendiagramm zeigt die wichtigsten Klassen und ihre Zusammenarbeit. Der Fokus liegt auf der Verbindung zwischen Oberfläche, Controller, Services, DAOs und Datenmodell.
+
+```mermaid
+classDiagram
+    class BudgetTrackerApplication {
+        +run()
+    }
+
+    class Pages {
+        +register()
+        -_register_login()
+        -_register_dashboard()
+        -_register_categories()
+        -_register_settings()
+        -_shell(title)
+        -_metric(label, value, value_class, subtitle)
+        -_progress(label, percent, detail, tone)
+    }
+
+    class AuthController {
+        +has_account()
+        +setup_password(password)
+        +login(password)
+        +logout()
+        +is_authenticated()
+        +change_password(current_password, new_password)
+    }
+
+    class BudgetController {
+        +categories()
+        +add_category(name)
+        +add_transaction(...)
+        +update_transaction(...)
+        +delete_transaction(transaction_id)
+        +summary(year, month)
+        +save_plan(...)
+        +export_pdf(year, month)
+        +export_csv(year, month)
+    }
+
+    class CategoryController {
+        +list_categories()
+        +add_category(name)
+    }
+
+    class BudgetService {
+        +list_categories()
+        +add_category(name)
+        +add_transaction(...)
+        +update_transaction(...)
+        +delete_transaction(transaction_id)
+        +save_plan(...)
+        +monthly_summary(year, month)
+    }
+
+    class ReportService {
+        +create_monthly_pdf(summary)
+        +create_monthly_csv(summary)
+    }
+
+    class PasswordService {
+        +hash_password(password)
+        +verify(password, password_hash)
+        +validate_new_password(password)
+    }
+
+    class CategoryDAO {
+        +list_all()
+        +get_by_name(name)
+        +create(name)
+    }
+
+    class TransactionDAO {
+        +create(transaction)
+        +get(transaction_id)
+        +update(...)
+        +delete(transaction_id)
+        +list_for_period(start, end)
+        +list_until(end)
+    }
+
+    class MonthlyBudgetDAO {
+        +get(year, month)
+        +save(year, month, planned_income, planned_expenses, savings_goal)
+    }
+
+    class UserAccountDAO {
+        +get_admin()
+        +create_admin(password_hash)
+        +update_password(password_hash)
+    }
+
+    class Category {
+        +id
+        +name
+    }
+
+    class Transaction {
+        +id
+        +booking_date
+        +kind
+        +category_id
+        +amount_chf
+        +note
+        +transfer_direction
+        +created_at
+        +signed_amount_chf
+    }
+
+    class MonthlyBudget {
+        +id
+        +year
+        +month
+        +planned_income_chf
+        +planned_expenses_chf
+        +savings_goal_chf
+    }
+
+    class UserAccount {
+        +id
+        +username
+        +password_hash
+        +created_at
+    }
+
+    BudgetTrackerApplication --> Pages
+    BudgetTrackerApplication --> AuthController
+    BudgetTrackerApplication --> BudgetController
+    BudgetTrackerApplication --> CategoryController
+    BudgetTrackerApplication --> BudgetService
+    BudgetTrackerApplication --> ReportService
+    BudgetTrackerApplication --> PasswordService
+
+    Pages --> AuthController
+    Pages --> BudgetController
+    Pages --> CategoryController
+
+    AuthController --> UserAccountDAO
+    AuthController --> PasswordService
+
+    BudgetController --> BudgetService
+    BudgetController --> ReportService
+
+    CategoryController --> CategoryDAO
+
+    BudgetService --> TransactionDAO
+    BudgetService --> CategoryDAO
+    BudgetService --> MonthlyBudgetDAO
+
+    CategoryDAO --> Category
+    TransactionDAO --> Transaction
+    MonthlyBudgetDAO --> MonthlyBudget
+    UserAccountDAO --> UserAccount
+
+    Category "1" --> "0..*" Transaction
+```
+
+### Erklärung des Klassendiagramms
+
+* `Pages` enthält die NiceGUI-Seiten und bildet den zentralen Teil der Oberfläche.
+* `AuthController`, `BudgetController` und `CategoryController` verbinden die Oberfläche mit der Applikationslogik.
+* `BudgetService` verarbeitet Budgetdaten, Buchungen, Monatsauswertungen und Kategorien.
+* `ReportService` erstellt PDF- und CSV-Exporte.
+* `PasswordService` übernimmt Passwort-Hashing, Passwortprüfung und Validierung.
+* Die DAO-Klassen kapseln den Datenbankzugriff.
+* Die Model-Klassen `Category`, `Transaction`, `MonthlyBudget` und `UserAccount` bilden die Datenbanktabellen ab.
+* Die Oberfläche bleibt von Datenbankzugriff und Businesslogik getrennt.
