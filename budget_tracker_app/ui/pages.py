@@ -1,4 +1,4 @@
-﻿"""NiceGUI page definitions."""
+"""NiceGUI page definitions."""
 
 from __future__ import annotations
 
@@ -6,26 +6,13 @@ from datetime import date
 
 from nicegui import ui
 
-from ..services.budget_service import SAVINGS_CATEGORY, TRANSACTION_KINDS, TRANSFER_DIRECTIONS, TRANSFER_DIRECTION_ALIASES
+from ..services.budget_service import (
+    SAVINGS_CATEGORY,
+    TRANSACTION_KINDS,
+    TRANSFER_DIRECTIONS,
+    TRANSFER_DIRECTION_ALIASES,
+)
 from .controllers import AuthController, BudgetController, CategoryController
-
-
-PAGE_CLASS = "w-full max-w-7xl mx-auto px-4 py-6 gap-5"
-TOPBAR_CLASS = "topbar w-full items-start sm:items-center justify-between gap-3 bg-slate-900 text-white rounded-lg px-5 py-4 shadow-lg"
-PAGE_TITLE_CLASS = "text-3xl font-bold leading-tight"
-SECTION_TITLE_CLASS = "text-xl font-bold leading-snug"
-PANEL_CLASS = "panel bg-white border border-slate-200 rounded-lg shadow-sm p-5"
-METRIC_CLASS = "metric bg-white border border-slate-200 rounded-lg shadow-sm p-4 min-h-28 gap-1"
-METRICS_GRID_CLASS = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full"
-CHARTS_GRID_CLASS = "grid grid-cols-1 lg:grid-cols-2 gap-4 w-full"
-WORK_GRID_CLASS = "grid grid-cols-1 xl:grid-cols-3 gap-4 w-full items-start"
-SPLIT_GRID_CLASS = "grid grid-cols-1 md:grid-cols-2 gap-3 w-full"
-LOGIN_SHELL_CLASS = "min-h-screen flex items-center justify-center bg-slate-100 p-6"
-LOGIN_PANEL_CLASS = "w-full max-w-md bg-white border border-slate-200 rounded-lg shadow-lg p-7 gap-4"
-POSITIVE_CLASS = "text-teal-700"
-NEGATIVE_CLASS = "text-red-700"
-BLUE_CLASS = "text-blue-700"
-AMBER_CLASS = "text-amber-700"
 
 
 class Pages:
@@ -57,38 +44,157 @@ class Pages:
         ui.add_head_html(
             """
             <style>
+            :root {
+                --app-bg: #f4f7f3;
+                --surface: #ffffff;
+                --surface-soft: #f8fbf6;
+                --ink: #15202b;
+                --muted: #64748b;
+                --line: #d7e3d8;
+                --brand: #0f766e;
+                --brand-strong: #134e4a;
+                --green: #059669;
+                --red: #b91c1c;
+                --amber: #b45309;
+                --blue: #1d4ed8;
+                --violet: #6d28d9;
+            }
             body {
-                background: #f8fafc;
-                color: #0f172a;
+                background:
+                    radial-gradient(circle at top left, rgba(16, 185, 129, 0.16), transparent 30%),
+                    linear-gradient(180deg, rgba(15, 118, 110, 0.08), rgba(5, 150, 105, 0.04) 36%, rgba(180, 83, 9, 0.04) 100%),
+                    var(--app-bg);
+                color: var(--ink);
                 font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             }
-            .nav-link { color: #dbeafe; font-weight: 600; text-decoration: none; }
-            .nav-link:hover { color: white; }
-            .muted { color: #64748b; }
-            .metric-label { color: #64748b; font-size: 0.83rem; font-weight: 700; text-transform: uppercase; }
-            .metric-value { font-size: 1.38rem; font-weight: 800; line-height: 1.25; }
-            .metric-subtitle { color: #64748b; font-size: 0.88rem; line-height: 1.25; }
-            .progress-block { gap: 7px; }
-            .progress-track { width: 100%; height: 10px; background: #e8edf4; border-radius: 999px; overflow: hidden; }
-            .progress-fill { height: 100%; border-radius: 999px; }
-            .tone-green { background: #0f766e; }
-            .tone-blue { background: #2563eb; }
-            .tone-red { background: #dc2626; }
-            .tone-amber { background: #d97706; }
-            .warning-panel { background: #fff7ed; border-color: #fed7aa; }
-            .tip-list { margin: 0; padding-left: 18px; color: #465264; }
-            .transaction-table .q-table__top, .transaction-table .q-table__bottom { background: white; }
-            .edit-dialog { width: min(560px, 92vw); border-radius: 8px; }
+            .app-shell .q-field__control {
+                border-radius: 8px;
+                background: #ffffff;
+                border: 1px solid rgba(15, 118, 110, 0.08);
+            }
+            .app-shell .q-btn {
+                border-radius: 8px;
+                font-weight: 700;
+                letter-spacing: 0;
+                transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+            }
+            .app-shell .q-btn:hover {
+                transform: translateY(-1px);
+            }
+            .app-shell .q-table__container {
+                border-radius: 8px;
+                box-shadow: none;
+            }
+            .app-shell .q-table th {
+                color: #475569;
+                font-size: 0.75rem;
+                font-weight: 800;
+                letter-spacing: 0;
+                text-transform: uppercase;
+                background: #f8fafc;
+            }
+            .app-shell .q-table td {
+                color: #1f2937;
+                font-size: 0.875rem;
+            }
+            .transaction-table tbody tr {
+                transition: background 150ms ease;
+            }
+            .transaction-table tbody tr:hover {
+                background: #ecfdf5;
+            }
+            .app-panel {
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-top: 4px solid rgba(5, 150, 105, 0.88);
+                border-radius: 8px;
+                box-shadow: 0 14px 36px rgba(20, 83, 45, 0.08);
+                transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+            }
+            .app-panel:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 18px 44px rgba(20, 83, 45, 0.11);
+                border-color: #a7f3d0;
+            }
+            .app-header {
+                background: linear-gradient(135deg, #064e3b 0%, #0f766e 65%, #059669 100%);
+                border: 0;
+                border-radius: 8px;
+                box-shadow: 0 16px 38px rgba(6, 78, 59, 0.22);
+            }
+            .app-header .q-btn {
+                color: white;
+            }
+            .app-soft-panel {
+                background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+                border: 1px solid #bbf7d0;
+                border-radius: 8px;
+            }
+            .metric-accent {
+                width: 36px;
+                height: 4px;
+                border-radius: 999px;
+            }
+            .metric-card {
+                background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                border: 1px solid #d7e3d8;
+                border-radius: 8px;
+                box-shadow: 0 10px 26px rgba(20, 83, 45, 0.07);
+                transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+            }
+            .metric-card:hover {
+                transform: translateY(-1px);
+                border-color: #86efac;
+                box-shadow: 0 16px 34px rgba(20, 83, 45, 0.11);
+            }
+            .progress-track {
+                width: 100%;
+                height: 10px;
+                background: #e6ebe4;
+                border-radius: 999px;
+                overflow: hidden;
+            }
+            .progress-fill {
+                height: 100%;
+                border-radius: 999px;
+            }
+            .tip-list {
+                margin: 0;
+                padding-left: 18px;
+                color: var(--muted);
+            }
+            .transaction-table .q-table__top,
+            .transaction-table .q-table__bottom {
+                background: white;
+            }
+            .edit-dialog {
+                width: min(560px, 92vw);
+                border-radius: 8px;
+            }
+            @media (max-width: 767px) {
+                .app-nav {
+                    width: 100%;
+                    justify-content: flex-start;
+                    overflow-x: auto;
+                    padding-bottom: 2px;
+                }
+            }
             </style>
             """
         )
-        with ui.row().classes(TOPBAR_CLASS):
-            ui.label(title).classes(PAGE_TITLE_CLASS)
-            with ui.row().classes("items-center gap-4"):
-                ui.link("Übersicht", "/").classes("nav-link")
-                ui.link("Kategorien", "/categories").classes("nav-link")
-                ui.link("Einstellungen", "/settings").classes("nav-link")
-                ui.button("Logout", on_click=lambda: (self.auth.logout(), ui.navigate.to("/login"))).props("flat color=white")
+        with ui.row().classes("w-full items-center justify-between gap-4 app-header px-4 py-4 md:px-5"):
+            with ui.row().classes("items-center gap-3"):
+                ui.icon("account_balance_wallet").classes("text-white text-3xl")
+                with ui.column().classes("gap-0"):
+                    ui.label(title).classes("text-2xl font-bold leading-tight text-white")
+                    ui.label("Persönlicher Budget Tracker").classes("text-sm text-emerald-100")
+            with ui.row().classes("app-nav items-center gap-1"):
+                self._nav_link("Übersicht", "/", "dashboard")
+                self._nav_link("Kategorien", "/categories", "sell")
+                self._nav_link("Einstellungen", "/settings", "settings")
+                ui.button("Logout", icon="logout", on_click=lambda: (self.auth.logout(), ui.navigate.to("/login"))).props(
+                    "unelevated color=negative"
+                )
 
     def _register_login(self) -> None:
         @ui.page("/login")
@@ -97,19 +203,32 @@ class Pages:
                 """
                 <style>
                 body {
-                    background: #f8fafc;
-                    color: #0f172a;
+                    background:
+                        radial-gradient(circle at top left, rgba(16, 185, 129, 0.18), transparent 32%),
+                        linear-gradient(135deg, #f0fdf4 0%, #f8fafc 52%, #ecfdf5 100%);
                     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
                 }
-                .muted { color: #64748b; }
+                .app-panel {
+                    background: #ffffff;
+                    border: 1px solid #bbf7d0;
+                    border-top: 4px solid #059669;
+                    border-radius: 8px;
+                    box-shadow: 0 24px 64px rgba(6, 78, 59, 0.14);
+                }
+                .login-card .q-btn, .login-card .q-field__control { border-radius: 8px; }
                 </style>
                 """
             )
-            with ui.element("div").classes(LOGIN_SHELL_CLASS):
-                with ui.column().classes(LOGIN_PANEL_CLASS):
-                    ui.label("Budget Tracker").classes(PAGE_TITLE_CLASS)
+            with ui.element("div").classes("min-h-screen flex items-center justify-center px-5 py-8"):
+                with ui.column().classes("login-card w-full max-w-md app-panel p-8 gap-5"):
+                    with ui.row().classes("items-center gap-3"):
+                        ui.icon("account_balance_wallet").classes("text-emerald-700 text-4xl")
+                        with ui.column().classes("gap-0"):
+                            ui.label("Budget Tracker").classes("text-3xl font-bold leading-tight text-slate-950")
+                            ui.label("Lokale Finanzübersicht").classes("text-sm text-emerald-700")
+
                     if not self.auth.has_account():
-                        ui.label("Beim ersten Start ein Passwort festlegen.").classes("muted")
+                        ui.label("Lege beim ersten Start dein Passwort fest.").classes("text-slate-600")
                         password = ui.input("Neues Passwort", password=True, password_toggle_button=True).classes("w-full")
 
                         def setup() -> None:
@@ -121,7 +240,7 @@ class Pages:
                             ui.notify("Passwort gespeichert.", type="positive")
                             ui.navigate.to("/")
 
-                        ui.button("Passwort speichern", on_click=setup).props("icon=save color=primary")
+                        ui.button("Passwort speichern", icon="save", on_click=setup).props("color=positive unelevated").classes("w-full py-3")
                         return
 
                     password = ui.input("Passwort", password=True, password_toggle_button=True).classes("w-full")
@@ -133,7 +252,7 @@ class Pages:
                             ui.notify("Falsches Passwort.", type="negative")
 
                     password.on("keydown.enter", login)
-                    ui.button("Einloggen", on_click=login).props("icon=login color=primary")
+                    ui.button("Einloggen", icon="login", on_click=login).props("color=positive unelevated").classes("w-full py-3")
 
     def _register_dashboard(self) -> None:
         @ui.page("/")
@@ -144,13 +263,16 @@ class Pages:
             today = date.today()
             selected_month = {"year": today.year, "month": today.month}
 
-            with ui.column().classes(PAGE_CLASS):
-                self._shell("Budget Tracker")
+            with ui.column().classes("app-shell w-full max-w-7xl mx-auto px-4 py-6 gap-5"):
+                self._shell("Übersicht")
 
-                with ui.row().classes("w-full items-end gap-3"):
-                    year_input = ui.number("Jahr", value=selected_month["year"], min=2000, max=2100, step=1).classes("w-32")
-                    month_input = ui.number("Monat", value=selected_month["month"], min=1, max=12, step=1).classes("w-32")
-                    ui.button("Monat anzeigen", on_click=lambda: refresh()).props("icon=calendar_month outline color=primary")
+                with ui.row().classes("w-full items-end justify-between gap-3 app-soft-panel px-4 py-4 shadow-sm"):
+                    with ui.row().classes("items-end gap-3"):
+                        year_input = ui.number("Jahr", value=selected_month["year"], min=2000, max=2100, step=1).classes("w-32")
+                        month_input = ui.number("Monat", value=selected_month["month"], min=1, max=12, step=1).classes("w-32")
+                    ui.button("Monat anzeigen", icon="calendar_month", on_click=lambda: refresh()).props(
+                        "outline color=primary"
+                    )
 
                 summary_container = ui.column().classes("w-full gap-4")
                 table_container = ui.column().classes("w-full")
@@ -175,44 +297,65 @@ class Pages:
                             if summary.largest_expense_category
                             else "Noch keine Kategorie belastet"
                         )
-                        with ui.element("div").classes(METRICS_GRID_CLASS):
-                            self._metric("Einnahmen", f"CHF {summary.income_chf:.2f}", POSITIVE_CLASS, "Gebucht im Monat")
-                            self._metric("Ausgaben", f"CHF {summary.expenses_chf:.2f}", NEGATIVE_CLASS, "Gebucht im Monat")
-                            free_to_spend = summary.remaining_expense_budget_chf if summary.plan else summary.balance_chf
-                            free_class = POSITIVE_CLASS if free_to_spend >= 0 else NEGATIVE_CLASS
-                            free_subtitle = "Restbudget" if summary.plan else "Saldo ohne Monatsplan"
-                            self._metric("Noch frei", f"CHF {free_to_spend:.2f}", free_class, free_subtitle)
-                            self._metric("Grösste Kategorie", largest_label, BLUE_CLASS, largest_subtitle)
-                            expense_delta = round(summary.expenses_chf - previous_summary.expenses_chf, 2)
-                            delta_class = POSITIVE_CLASS if expense_delta <= 0 else NEGATIVE_CLASS
-                            delta_sign = "+" if expense_delta > 0 else ""
-                            self._metric("Monatsvergleich", f"{delta_sign}CHF {expense_delta:.2f}", delta_class, "Ausgaben vs. Vormonat")
-                            self._metric("Netto gespart", f"CHF {summary.savings_booked_chf:.2f}", BLUE_CLASS, "Umbuchungen Sparkonto")
-                            health_class = POSITIVE_CLASS if summary.budget_health_score >= 80 else AMBER_CLASS
-                            if summary.budget_health_score < 60:
-                                health_class = NEGATIVE_CLASS
-                            self._metric("Budget-Health", f"{summary.budget_health_score}/100", health_class, summary.budget_health_label)
-                            self._metric("Nettovermögen", f"CHF {summary.net_worth_chf:.2f}", BLUE_CLASS, "Budgetkonto plus Sparkonto")
-                            day_class = POSITIVE_CLASS if summary.available_per_day_chf >= 0 else NEGATIVE_CLASS
-                            self._metric("Pro Tag frei", f"CHF {summary.available_per_day_chf:.2f}", day_class, "Bis Monatsende")
+                        free_to_spend = summary.remaining_expense_budget_chf if summary.plan else summary.balance_chf
+                        free_class = "text-emerald-700" if free_to_spend >= 0 else "text-red-700"
+                        free_subtitle = "Restbudget" if summary.plan else "Saldo ohne Monatsplan"
+                        expense_delta = round(summary.expenses_chf - previous_summary.expenses_chf, 2)
+                        delta_class = "text-emerald-700" if expense_delta <= 0 else "text-red-700"
+                        delta_sign = "+" if expense_delta > 0 else ""
+                        health_class = "text-emerald-700" if summary.budget_health_score >= 80 else "text-amber-700"
+                        if summary.budget_health_score < 60:
+                            health_class = "text-red-700"
+                        day_class = "text-emerald-700" if summary.available_per_day_chf >= 0 else "text-red-700"
+
+                        with ui.element("div").classes("w-full grid grid-cols-1 xl:grid-cols-3 gap-4"):
+                            with ui.column().classes("app-panel p-5 gap-4 xl:col-span-2"):
+                                with ui.row().classes("w-full items-start justify-between gap-3"):
+                                    with ui.column().classes("gap-1"):
+                                        ui.label(f"{month:02d}.{year}").classes("text-sm font-bold uppercase text-emerald-700")
+                                        ui.label("Monatsstatus").classes("text-3xl font-bold leading-tight text-slate-950")
+                                    ui.badge(summary.budget_health_label).props(self._badge_props(summary.budget_health_score)).classes("px-3 py-2")
+                                with ui.element("div").classes("w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"):
+                                    self._metric("Einnahmen", self._chf(summary.income_chf), "text-emerald-700", "Gebucht im Monat", "bg-emerald-600")
+                                    self._metric("Ausgaben", self._chf(summary.expenses_chf), "text-red-700", "Gebucht im Monat", "bg-red-600")
+                                    self._metric("Noch frei", self._chf(free_to_spend), free_class, free_subtitle, "bg-cyan-700")
+                                    self._metric("Pro Tag frei", self._chf(summary.available_per_day_chf), day_class, "Bis Monatsende", "bg-amber-600")
+                            with ui.column().classes("app-panel p-5 gap-4"):
+                                self._section_title("Konten", "account_balance")
+                                self._mini_fact("Budgetkonto", summary.budget_cash_chf, "account_balance")
+                                self._mini_fact("Sparkonto", summary.savings_balance_chf, "savings")
+                                self._mini_fact("Nettovermögen", summary.net_worth_chf, "monitoring")
+
+                        with ui.element("div").classes("w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"):
+                            self._metric("Grösste Kategorie", largest_label, "text-blue-700", largest_subtitle, "bg-blue-600")
+                            self._metric("Monatsvergleich", f"{delta_sign}{self._chf(expense_delta)}", delta_class, "Ausgaben vs. Vormonat", "bg-violet-600")
+                            self._metric("Netto gespart", self._chf(summary.savings_booked_chf), "text-blue-700", "Umbuchungen Sparkonto", "bg-cyan-700")
+                            self._metric("Budget-Health", f"{summary.budget_health_score}/100", health_class, summary.budget_health_label, "bg-emerald-600")
+                            self._metric("Cashflow", self._chf(summary.cash_flow_chf), self._amount_class(summary.cash_flow_chf), "Einnahmen minus Ausgaben", "bg-slate-700")
 
                         if summary.plan and summary.spending_budget_used_pct >= 100:
-                            self._warning("Budget-Limite überschritten", "Du hast mehr Budget genutzt als geplant. Prüfe die grössten Kategorien und verschiebe falls nötig Geld vom Sparkonto zurück.")
+                            self._warning(
+                                "Budget-Limite überschritten",
+                                "Du hast mehr Budget genutzt als geplant. Prüfe die grössten Kategorien und verschiebe falls nötig Geld vom Sparkonto zurück.",
+                            )
                         elif summary.plan and summary.spending_budget_used_pct >= 80:
-                            self._warning("Budget-Limite bald erreicht", "Du hast bereits über 80% deines Monatsbudgets genutzt.")
+                            self._warning(
+                                "Budget-Limite bald erreicht",
+                                "Du hast bereits über 80% deines Monatsbudgets genutzt.",
+                            )
 
-                        with ui.element("div").classes(CHARTS_GRID_CLASS):
-                            with ui.column().classes(f"{PANEL_CLASS} gap-3"):
-                                ui.label("Ausgaben-Verteilung").classes(SECTION_TITLE_CLASS)
+                        with ui.element("div").classes("w-full grid grid-cols-1 lg:grid-cols-2 gap-4"):
+                            with ui.column().classes("app-panel p-5 gap-3"):
+                                self._section_title("Ausgaben-Verteilung", "donut_large")
                                 self._pie_chart(summary.category_expenses)
-                            with ui.column().classes(f"{PANEL_CLASS} gap-3"):
-                                ui.label("Monatsvergleich").classes(SECTION_TITLE_CLASS)
+                            with ui.column().classes("app-panel p-5 gap-3"):
+                                self._section_title("Monatsvergleich", "bar_chart")
                                 self._comparison_chart(summary, previous_summary)
 
-                        with ui.element("div").classes(WORK_GRID_CLASS):
-                            with ui.column().classes(f"{PANEL_CLASS} xl:col-span-2 gap-4"):
-                                ui.label("Neue Buchung").classes(SECTION_TITLE_CLASS)
-                                with ui.element("div").classes(SPLIT_GRID_CLASS):
+                        with ui.column().classes("w-full gap-4"):
+                            with ui.column().classes("app-panel p-5 gap-4 w-full"):
+                                self._section_title("Neue Buchung", "add_card")
+                                with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-2 gap-3"):
                                     booking_date = ui.input("Datum", value=date.today().isoformat()).props("type=date").classes("w-full")
                                     kind = ui.select(list(TRANSACTION_KINDS), value="Ausgabe", label="Typ").classes("w-full")
                                 transfer_direction = ui.select(
@@ -238,7 +381,10 @@ class Pages:
                                         new_category.update()
                                         ui.notify(f"Kategorie {created} hinzugefügt.", type="positive")
 
-                                    ui.button(icon="add", on_click=add_inline_category).props("round outline color=primary").tooltip("Kategorie hinzufügen")
+                                    ui.button(icon="add", on_click=add_inline_category).props("round outline color=primary").tooltip(
+                                        "Kategorie hinzufügen"
+                                    )
+
                                 def update_kind_controls() -> None:
                                     is_transfer = kind.value == "Umbuchung"
                                     transfer_direction.visible = is_transfer
@@ -253,7 +399,7 @@ class Pages:
                                 kind.on_value_change(lambda _: update_kind_controls())
                                 update_kind_controls()
 
-                                with ui.element("div").classes(SPLIT_GRID_CLASS):
+                                with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-2 gap-3"):
                                     amount = ui.input("Betrag CHF", value="0.00").classes("w-full")
                                     note = ui.input("Notiz", value="").classes("w-full")
 
@@ -273,14 +419,23 @@ class Pages:
                                     ui.notify("Buchung gespeichert.", type="positive")
                                     refresh()
 
-                                ui.button("Buchung speichern", on_click=save_transaction).props("icon=save color=primary")
+                                ui.button("Buchung speichern", icon="save", on_click=save_transaction).props(
+                                    "color=positive unelevated"
+                                ).classes("self-start px-5 py-2")
 
-                            with ui.column().classes(f"{PANEL_CLASS} gap-4"):
-                                ui.label("Monatsplan").classes(SECTION_TITLE_CLASS)
+                            with ui.column().classes("app-panel p-5 gap-4 w-full"):
+                                self._section_title("Monatsplan", "event_note")
                                 plan = summary.plan
-                                planned_income = ui.input("Geplante Einnahmen", value=f"{plan.planned_income_chf:.2f}" if plan else "0.00").classes("w-full")
-                                planned_expenses = ui.input("Geplante Ausgaben", value=f"{plan.planned_expenses_chf:.2f}" if plan else "0.00").classes("w-full")
-                                savings_goal = ui.input("Sparziel", value=f"{plan.savings_goal_chf:.2f}" if plan else "0.00").classes("w-full")
+                                with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-3 gap-3"):
+                                    planned_income = ui.input(
+                                        "Geplante Einnahmen",
+                                        value=f"{plan.planned_income_chf:.2f}" if plan else "0.00",
+                                    ).classes("w-full")
+                                    planned_expenses = ui.input(
+                                        "Geplante Ausgaben",
+                                        value=f"{plan.planned_expenses_chf:.2f}" if plan else "0.00",
+                                    ).classes("w-full")
+                                    savings_goal = ui.input("Sparziel", value=f"{plan.savings_goal_chf:.2f}" if plan else "0.00").classes("w-full")
 
                                 def save_plan() -> None:
                                     try:
@@ -299,59 +454,52 @@ class Pages:
                                     path = self.budget.export_csv(year, month)
                                     ui.notify(f"CSV gespeichert: {path}", type="positive")
 
-                                with ui.row().classes("gap-2"):
-                                    ui.button("Plan speichern", on_click=save_plan).props("icon=save color=primary")
-                                    ui.button("PDF", on_click=export_pdf).props("icon=picture_as_pdf outline color=primary")
-                                    ui.button("CSV", on_click=export_csv).props("icon=table_view outline color=primary")
+                                with ui.row().classes("gap-2 flex-wrap"):
+                                    ui.button("Plan speichern", icon="save", on_click=save_plan).props("color=positive unelevated")
+                                    ui.button("PDF", icon="picture_as_pdf", on_click=export_pdf).props("outline color=primary")
+                                    ui.button("CSV", icon="table_view", on_click=export_csv).props("outline color=primary")
 
                                 if summary.plan:
-                                    budget_tone = "tone-red" if summary.spending_budget_used_pct > 100 else "tone-green"
+                                    budget_tone = "bg-red-600" if summary.spending_budget_used_pct > 100 else "bg-emerald-700"
                                     self._progress(
                                         "Budget genutzt",
                                         summary.spending_budget_used_pct,
-                                        f"Ausgaben und Umbuchungen CHF {summary.budget_used_chf:.2f} von CHF {summary.planned_expenses_chf:.2f}",
+                                        f"Ausgaben und Umbuchungen {self._chf(summary.budget_used_chf)} von {self._chf(summary.planned_expenses_chf)}",
                                         budget_tone,
                                     )
                                     savings_detail = (
-                                        f"Netto gespart CHF {summary.savings_booked_chf:.2f} bei Ziel CHF {summary.plan.savings_goal_chf:.2f}"
+                                        f"Netto gespart {self._chf(summary.savings_booked_chf)} bei Ziel {self._chf(summary.plan.savings_goal_chf)}"
                                         if summary.savings_booked_chf >= 0
-                                        else f"Vom Sparkonto geholt CHF {abs(summary.savings_booked_chf):.2f} bei Ziel CHF {summary.plan.savings_goal_chf:.2f}"
+                                        else f"Vom Sparkonto geholt {self._chf(abs(summary.savings_booked_chf))} bei Ziel {self._chf(summary.plan.savings_goal_chf)}"
                                     )
                                     self._progress(
                                         "Sparziel erreicht",
                                         summary.savings_goal_progress_pct,
                                         savings_detail,
-                                        "tone-blue",
+                                        "bg-blue-600",
                                     )
 
                                 ui.separator()
-                                ui.label("Kontostand und Cashflow").classes(SECTION_TITLE_CLASS)
-                                with ui.element("div").classes(SPLIT_GRID_CLASS):
-                                    self._mini_fact("Budgetkonto", summary.budget_cash_chf)
-                                    self._mini_fact("Sparkonto", summary.savings_balance_chf)
-                                self._mini_fact("Monats-Cashflow", summary.cash_flow_chf)
-
-                                ui.separator()
-                                ui.label("Ausgaben nach Kategorie").classes(SECTION_TITLE_CLASS)
+                                self._section_title("Ausgaben nach Kategorie", "category")
                                 top_categories = sorted(summary.category_expenses.items(), key=lambda item: item[1], reverse=True)[:5]
                                 if not top_categories:
-                                    ui.label("Noch keine Ausgaben in diesem Monat.").classes("muted")
+                                    ui.label("Noch keine Ausgaben in diesem Monat.").classes("text-slate-500")
                                 for category_name, spent in top_categories:
                                     share = round((spent / summary.expenses_chf) * 100, 1) if summary.expenses_chf else 0.0
                                     self._category_bar(category_name, spent, share)
 
                                 ui.separator()
-                                ui.label("Wiederkehrende Ausgaben").classes(SECTION_TITLE_CLASS)
+                                self._section_title("Wiederkehrende Ausgaben", "autorenew")
                                 if not summary.recurring_expenses:
-                                    ui.label("Noch nicht genug Historie für sichere Erkennung.").classes("muted")
+                                    ui.label("Noch nicht genug Historie für sichere Erkennung.").classes("text-slate-500")
                                 for recurring in summary.recurring_expenses:
                                     ui.label(
-                                        f"{recurring.name}: CHF {recurring.monthly_amount_chf:.2f}/Monat "
-                                        f"(ca. CHF {recurring.yearly_amount_chf:.2f}/Jahr)"
-                                    ).classes("muted")
+                                        f"{recurring.name}: {self._chf(recurring.monthly_amount_chf)}/Monat "
+                                        f"(ca. {self._chf(recurring.yearly_amount_chf)}/Jahr)"
+                                    ).classes("text-slate-600")
 
                                 ui.separator()
-                                ui.label("Spartipps").classes(SECTION_TITLE_CLASS)
+                                self._section_title("Spartipps", "lightbulb")
                                 with ui.element("ul").classes("tip-list"):
                                     for tip in self._spending_tips(summary, previous_summary):
                                         with ui.element("li").classes("mb-1"):
@@ -359,8 +507,8 @@ class Pages:
 
                     table_container.clear()
                     with table_container:
-                        with ui.column().classes(f"{PANEL_CLASS} w-full gap-3"):
-                            ui.label("Monatliche Buchungen").classes(SECTION_TITLE_CLASS)
+                        with ui.column().classes("app-panel p-5 w-full gap-3"):
+                            self._section_title("Monatliche Buchungen", "receipt_long")
                             all_rows = [
                                 {
                                     "id": transaction.id,
@@ -368,7 +516,11 @@ class Pages:
                                     "raw_date": transaction.booking_date.isoformat(),
                                     "kind": transaction.kind,
                                     "direction": TRANSFER_DIRECTION_ALIASES.get(transaction.transfer_direction, transaction.transfer_direction or ""),
-                                    "category": "Sparkonto" if transaction.kind == "Umbuchung" else (transaction.category.name if transaction.category else "Unbekannt"),
+                                    "category": (
+                                        "Sparkonto"
+                                        if transaction.kind == "Umbuchung"
+                                        else (transaction.category.name if transaction.category else "Unbekannt")
+                                    ),
                                     "note": transaction.note,
                                     "amount": f"{transaction.signed_amount_chf:.2f}",
                                 }
@@ -383,13 +535,11 @@ class Pages:
                                 {"name": "amount", "label": "Betrag CHF", "field": "amount", "align": "right"},
                                 {"name": "actions", "label": "", "field": "actions", "align": "center"},
                             ]
-                            with ui.element("div").classes(SPLIT_GRID_CLASS):
+                            with ui.element("div").classes("w-full grid grid-cols-1 md:grid-cols-3 gap-3"):
                                 search_input = ui.input("Suche", placeholder="Notiz, Kategorie, Typ").props("clearable").classes("w-full")
                                 kind_filter = ui.select(["Alle", *TRANSACTION_KINDS], value="Alle", label="Typ filtern").classes("w-full")
-                            with ui.element("div").classes(SPLIT_GRID_CLASS):
                                 category_options = ["Alle", *sorted({row["category"] for row in all_rows})]
                                 category_filter = ui.select(category_options, value="Alle", label="Kategorie filtern").classes("w-full")
-                                ui.label("").classes("w-full")
                             filtered_table = ui.column().classes("w-full")
 
                             def render_filtered_table() -> None:
@@ -407,8 +557,10 @@ class Pages:
 
                                 filtered_table.clear()
                                 with filtered_table:
-                                    ui.label(f"{len(filtered_rows)} von {len(all_rows)} Buchungen").classes("muted")
-                                    table = ui.table(columns=columns, rows=filtered_rows, row_key="id").classes("transaction-table w-full")
+                                    ui.label(f"{len(filtered_rows)} von {len(all_rows)} Buchungen").classes("text-slate-500")
+                                    table = ui.table(columns=columns, rows=filtered_rows, row_key="id").classes(
+                                        "transaction-table w-full min-h-72"
+                                    )
                                     table.props("flat bordered :rows-per-page-options='[10, 20, 50]'")
                                     table.add_slot(
                                         "body-cell-actions",
@@ -436,8 +588,8 @@ class Pages:
                     categories = self.budget.categories()
                     current_category = transaction.category.name if transaction.category else (categories[0] if categories else None)
                     dialog = ui.dialog()
-                    with dialog, ui.card().classes("edit-dialog rounded-lg gap-4"):
-                        ui.label("Buchung bearbeiten").classes(SECTION_TITLE_CLASS)
+                    with dialog, ui.card().classes("edit-dialog gap-4"):
+                        self._section_title("Buchung bearbeiten", "edit")
                         edit_date = ui.input("Datum", value=transaction.booking_date.isoformat()).props("type=date").classes("w-full")
                         edit_kind = ui.select(list(TRANSACTION_KINDS), value=transaction.kind, label="Typ").classes("w-full")
                         edit_transfer_direction = ui.select(
@@ -480,8 +632,8 @@ class Pages:
                             refresh()
 
                         with ui.row().classes("gap-2"):
-                            ui.button("Speichern", on_click=save_edit).props("icon=save color=primary")
-                            ui.button("Abbrechen", on_click=dialog.close).props("flat")
+                            ui.button("Speichern", icon="save", on_click=save_edit).props("color=primary unelevated")
+                            ui.button("Abbrechen", icon="close", on_click=dialog.close).props("flat")
                     dialog.open()
 
                 refresh()
@@ -491,11 +643,13 @@ class Pages:
         def categories_page() -> None:
             if not self._guard():
                 return
-            with ui.column().classes(PAGE_CLASS):
+            with ui.column().classes("app-shell w-full max-w-7xl mx-auto px-4 py-6 gap-5"):
                 self._shell("Kategorien")
-                with ui.column().classes(f"{PANEL_CLASS} gap-4"):
-                    ui.label("Kategorien verwalten").classes(SECTION_TITLE_CLASS)
-                    name = ui.input("Neue Kategorie").classes("w-full max-w-md")
+                with ui.column().classes("app-panel p-5 gap-4"):
+                    self._section_title("Kategorien verwalten", "sell")
+                    with ui.row().classes("w-full max-w-2xl items-end gap-2"):
+                        name = ui.input("Neue Kategorie").classes("flex-1")
+                        ui.button(icon="add", on_click=lambda: add()).props("round color=primary").tooltip("Kategorie hinzufügen")
                     list_container = ui.column().classes("w-full")
 
                     def refresh_list() -> None:
@@ -505,7 +659,7 @@ class Pages:
                             ui.table(
                                 columns=[{"name": "name", "label": "Kategorie", "field": "name", "align": "left"}],
                                 rows=rows,
-                            ).classes("w-full max-w-xl").props("flat bordered")
+                            ).classes("w-full max-w-2xl").props("flat bordered")
 
                     def add() -> None:
                         try:
@@ -517,7 +671,6 @@ class Pages:
                         ui.notify(f"Kategorie {created} hinzugefügt.", type="positive")
                         refresh_list()
 
-                    ui.button("Kategorie hinzufügen", on_click=add).props("icon=add color=primary")
                     refresh_list()
 
     def _register_settings(self) -> None:
@@ -525,12 +678,12 @@ class Pages:
         def settings_page() -> None:
             if not self._guard():
                 return
-            with ui.column().classes(PAGE_CLASS):
+            with ui.column().classes("app-shell w-full max-w-7xl mx-auto px-4 py-6 gap-5"):
                 self._shell("Einstellungen")
-                with ui.column().classes(f"{PANEL_CLASS} gap-4"):
-                    ui.label("Passwort ändern").classes(SECTION_TITLE_CLASS)
-                    current = ui.input("Aktuelles Passwort", password=True, password_toggle_button=True).classes("w-full max-w-md")
-                    new = ui.input("Neues Passwort", password=True, password_toggle_button=True).classes("w-full max-w-md")
+                with ui.column().classes("app-panel p-5 gap-4 max-w-2xl"):
+                    self._section_title("Passwort ändern", "lock_reset")
+                    current = ui.input("Aktuelles Passwort", password=True, password_toggle_button=True).classes("w-full")
+                    new = ui.input("Neues Passwort", password=True, password_toggle_button=True).classes("w-full")
 
                     def change() -> None:
                         try:
@@ -542,7 +695,7 @@ class Pages:
                         new.value = ""
                         ui.notify("Passwort geändert.", type="positive")
 
-                ui.button("Passwort speichern", on_click=change).props("icon=save color=primary")
+                    ui.button("Passwort speichern", icon="save", on_click=change).props("color=primary unelevated")
 
     @staticmethod
     def _previous_month(year: int, month: int) -> tuple[int, int]:
@@ -551,28 +704,46 @@ class Pages:
         return year, month - 1
 
     @staticmethod
+    def _nav_link(label: str, target: str, icon: str) -> None:
+        with ui.link(target=target).classes(
+            "no-underline text-white hover:text-white bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition-all duration-200"
+        ):
+            with ui.row().classes("items-center gap-2 no-wrap"):
+                ui.icon(icon).classes("text-base")
+                ui.label(label).classes("font-bold text-sm")
+
+    @staticmethod
+    def _section_title(title: str, icon: str) -> None:
+        with ui.row().classes("items-center gap-2 pb-1"):
+            ui.icon(icon).classes("text-emerald-700 text-xl")
+            ui.label(title).classes("text-xl font-bold leading-snug text-slate-950")
+
+    @staticmethod
     def _warning(title: str, message: str) -> None:
-        with ui.column().classes(f"{PANEL_CLASS} warning-panel gap-1"):
-            ui.label(title).classes(f"{SECTION_TITLE_CLASS} {AMBER_CLASS}")
-            ui.label(message).classes("muted")
+        with ui.column().classes("bg-amber-50 border border-amber-200 rounded-lg p-5 gap-1"):
+            with ui.row().classes("items-center gap-2"):
+                ui.icon("warning").classes("text-amber-700")
+                ui.label(title).classes("text-lg font-bold leading-snug text-amber-800")
+            ui.label(message).classes("text-slate-600")
 
     @staticmethod
     def _pie_chart(category_expenses: dict[str, float]) -> None:
         data = [{"name": name, "value": value} for name, value in sorted(category_expenses.items(), key=lambda item: item[1], reverse=True)]
         if not data:
-            ui.label("Noch keine Ausgaben für ein Diagramm.").classes("muted")
+            ui.label("Noch keine Ausgaben für ein Diagramm.").classes("text-slate-500")
             return
         ui.echart(
             {
+                "color": ["#0e7490", "#047857", "#b45309", "#be123c", "#6d28d9", "#475569", "#16a34a"],
                 "tooltip": {"trigger": "item"},
-                "legend": {"bottom": 0, "left": "center"},
+                "legend": {"bottom": 0, "left": "center", "textStyle": {"color": "#475569"}},
                 "series": [
                     {
                         "type": "pie",
-                        "radius": ["42%", "70%"],
+                        "radius": ["44%", "70%"],
                         "avoidLabelOverlap": True,
                         "itemStyle": {"borderRadius": 6, "borderColor": "#fff", "borderWidth": 2},
-                        "label": {"formatter": "{b}: {d}%"},
+                        "label": {"formatter": "{b}: {d}%", "color": "#334155"},
                         "data": data,
                     }
                 ],
@@ -583,21 +754,27 @@ class Pages:
     def _comparison_chart(summary, previous_summary) -> None:
         ui.echart(
             {
+                "color": ["#b91c1c", "#0e7490", "#047857"],
                 "tooltip": {"trigger": "axis"},
-                "xAxis": {"type": "category", "data": ["Vormonat", "Aktuell"]},
-                "yAxis": {"type": "value"},
+                "legend": {"top": 0, "textStyle": {"color": "#475569"}},
+                "grid": {"top": 44, "left": 44, "right": 16, "bottom": 36},
+                "xAxis": {"type": "category", "data": ["Vormonat", "Aktuell"], "axisLabel": {"color": "#475569"}},
+                "yAxis": {"type": "value", "axisLabel": {"color": "#475569"}},
                 "series": [
                     {
                         "name": "Ausgaben",
                         "type": "bar",
                         "data": [previous_summary.expenses_chf, summary.expenses_chf],
-                        "itemStyle": {"color": "#b42318"},
                     },
                     {
                         "name": "Budget genutzt",
                         "type": "bar",
                         "data": [previous_summary.budget_used_chf, summary.budget_used_chf],
-                        "itemStyle": {"color": "#2563eb"},
+                    },
+                    {
+                        "name": "Netto gespart",
+                        "type": "bar",
+                        "data": [previous_summary.savings_booked_chf, summary.savings_booked_chf],
                     },
                 ],
             }
@@ -630,37 +807,56 @@ class Pages:
         return tips or ["Dieser Monat sieht stabil aus. Budget und Sparkonto weiter beobachten."]
 
     @staticmethod
-    def _metric(label: str, value: str, value_class: str, subtitle: str = "") -> None:
-        with ui.column().classes(METRIC_CLASS):
-            ui.label(label).classes("metric-label")
-            ui.label(value).classes(f"metric-value {value_class}")
+    def _metric(label: str, value: str, value_class: str, subtitle: str = "", accent_class: str = "bg-cyan-700") -> None:
+        with ui.column().classes("metric-card p-4 min-h-32 gap-2"):
+            ui.element("div").classes(f"metric-accent {accent_class}")
+            ui.label(label).classes("text-slate-500 text-xs font-bold uppercase")
+            ui.label(value).classes(f"text-2xl font-bold leading-tight break-words {value_class}")
             if subtitle:
-                ui.label(subtitle).classes("metric-subtitle")
+                ui.label(subtitle).classes("text-slate-500 text-sm leading-tight")
 
     @staticmethod
     def _progress(label: str, percent: float, detail: str, tone: str) -> None:
         safe_percent = max(0.0, min(percent, 100.0))
-        with ui.column().classes("progress-block w-full"):
-            with ui.row().classes("w-full items-center justify-between"):
-                ui.label(label).classes("font-bold")
-                ui.label(f"{percent:.1f}%").classes("muted")
+        with ui.column().classes("w-full gap-2"):
+            with ui.row().classes("w-full items-center justify-between gap-3"):
+                ui.label(label).classes("font-bold text-slate-900")
+                ui.label(f"{percent:.1f}%").classes("text-slate-500")
             with ui.element("div").classes("progress-track"):
                 ui.element("div").classes(f"progress-fill {tone}").style(f"width: {safe_percent}%;")
-            ui.label(detail).classes("muted text-xs")
+            ui.label(detail).classes("text-slate-500 text-xs")
 
     @staticmethod
-    def _mini_fact(label: str, amount: float) -> None:
-        amount_class = POSITIVE_CLASS if amount >= 0 else NEGATIVE_CLASS
-        with ui.column().classes("gap-1"):
-            ui.label(label).classes("font-bold")
-            ui.label(f"CHF {amount:.2f}").classes(amount_class)
+    def _mini_fact(label: str, amount: float, icon: str) -> None:
+        amount_class = Pages._amount_class(amount)
+        with ui.row().classes("w-full items-center justify-between gap-3 app-soft-panel px-3 py-2"):
+            with ui.row().classes("items-center gap-2"):
+                ui.icon(icon).classes("text-cyan-800")
+                ui.label(label).classes("font-bold text-slate-700")
+            ui.label(Pages._chf(amount)).classes(f"font-bold {amount_class}")
 
     @staticmethod
     def _category_bar(category_name: str, spent: float, share: float) -> None:
         safe_share = max(0.0, min(share, 100.0))
-        with ui.column().classes("progress-block w-full"):
+        with ui.column().classes("w-full gap-2"):
             with ui.row().classes("w-full items-center justify-between gap-2"):
-                ui.label(category_name).classes("font-bold")
-                ui.label(f"CHF {spent:.2f} · {share:.1f}%").classes("muted")
+                ui.label(category_name).classes("font-bold text-slate-900")
+                ui.label(f"{Pages._chf(spent)} · {share:.1f}%").classes("text-slate-500")
             with ui.element("div").classes("progress-track"):
-                ui.element("div").classes("progress-fill tone-amber").style(f"width: {safe_share}%;")
+                ui.element("div").classes("progress-fill bg-amber-600").style(f"width: {safe_share}%;")
+
+    @staticmethod
+    def _badge_props(score: int) -> str:
+        if score >= 80:
+            return "color=green text-color=white"
+        if score >= 60:
+            return "color=amber text-color=white"
+        return "color=red text-color=white"
+
+    @staticmethod
+    def _amount_class(amount: float) -> str:
+        return "text-emerald-700" if amount >= 0 else "text-red-700"
+
+    @staticmethod
+    def _chf(amount: float) -> str:
+        return f"CHF {amount:.2f}"
