@@ -2,11 +2,11 @@
 
 Browserbasierte Weiterentwicklung des CLI-Projekts **Persönlicher Budget Tracker**. Die App ist ähnlich wie das Pizzeria-Referenzprojekt aufgebaut: NiceGUI als Oberfläche, Python für die Logik, SQLite als Datenbank und SQLModel als ORM.
 
-## Projektidee
+## 1.1 Projektidee
 
 Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele und Monatsbudgets lokal verwalten, ohne externe Finanzsoftware zu nutzen. Diese Webapp macht den ursprünglichen Konsolen-Budgetplan als Browser-Anwendung nutzbar und zeigt direkt ein realistisches Beispielbudget mit Seed-Daten.
 
-## User Stories
+## 1.2 User Stories
 
 1. **Buchung erfassen**
    Als Benutzer möchte ich Einnahmen, Ausgaben und Umbuchungen mit Datum, Kategorie, Betrag und Notiz erfassen.
@@ -32,7 +32,7 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 8. **Passwortschutz verwenden**
    Als Benutzer möchte ich die App mit einem Passwort schützen und das Passwort später ändern.
 
-## Use Cases
+## 1.3 Use Cases
 
 - **App starten und anmelden:** Benutzer öffnet die Webapp, richtet beim ersten Start ein Passwort ein oder meldet sich mit bestehendem Passwort an.
 - **Monat auswerten:** Benutzer wählt Jahr und Monat aus und sieht Kennzahlen, Diagramme, Budgetwarnungen und Spartipps.
@@ -43,7 +43,7 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 - **Daten finden:** Benutzer sucht und filtert Buchungen nach Text, Typ und Kategorie.
 - **Bericht exportieren:** Benutzer exportiert Monatsdaten als PDF-Bericht oder CSV-Datei.
 
-## Funktionen
+## 1.4 Funktionen
 
 - Browser-App mit NiceGUI
 - Passwort-Setup, Login und Passwortänderung
@@ -66,7 +66,7 @@ Viele Studierende und Berufseinsteiger möchten Einnahmen, Ausgaben, Sparziele u
 - SQLite-Datenbank via SQLModel ORM
 - Tests für Geschäftslogik, Datenbankzugriff und Integration
 
-## Bedienung
+## 1.5 Bedienung
 
 Beim ersten Start wird ein Passwort eingerichtet. Danach kann man sich anmelden und die App lokal im Browser nutzen.
 
@@ -83,7 +83,7 @@ Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die 
 - **Budget zu Sparkonto:** reduziert das verfügbare Budget und erhöht den Sparfortschritt.
 - **Sparkonto zu Budget:** erhöht das verfügbare Budget und reduziert den Netto-Sparbetrag.
 
-## Aufbau der App
+## 3.1 Aufbau der App
 
 - **Domain:** Datenmodelle für Transaktionen, Kategorien, Budgetpläne und Einstellungen.
 - **Data Access:** Datenbankverbindung, Tabellenaufbau, Seed-Daten und DAO-Klassen.
@@ -91,7 +91,7 @@ Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die 
 - **UI:** NiceGUI-Seiten und Controller für Dashboard, Formulare, Tabellen und Aktionen.
 - **Tests:** Unit-, Datenbank- und Integrationstests.
 
-## Design-Entscheidungen
+## 3.2 Design-Entscheidungen
 
 - **Schichtenarchitektur:** Oberfläche, Controller, Services, Datenzugriff und Modelle sind getrennt. Dadurch bleibt die Businesslogik testbar.
 - **NiceGUI als Browser-Frontend:** Die App läuft im Browser, wird aber serverseitig mit Python aufgebaut. Das passt zur Modulvorgabe.
@@ -101,7 +101,7 @@ Bei einer Umbuchung wird automatisch die Kategorie **Sparkonto** angezeigt. Die 
 - **Seed-Daten:** Neue Benutzer sehen sofort ein vollständiges Beispielbudget. Dadurch können Dashboard, Diagramme und Filter direkt getestet werden.
 - **Tests:** Die Tests sind in Unit-, DB- und Integrationstests aufgeteilt, damit Logik, Persistenz und Gesamtfluss getrennt geprüft werden.
 
-## Vergleich mit Budget-Apps
+## 2.2 Vergleich mit Budget-Apps
 
 Die App übernimmt bewusst passende Ideen aus bekannten Budgetplanern:
 
@@ -111,7 +111,7 @@ Die App übernimmt bewusst passende Ideen aus bekannten Budgetplanern:
 
 Nicht umgesetzt sind Bank-Sync, echte Mehrbenutzer-Synchronisation, Investments und automatische Bank-Importe. Diese Punkte wären für ein Schulprojekt deutlich grösser und werden deshalb als Erweiterungen betrachtet.
 
-## Projektmanagement und Arbeitsaufteilung
+## 2.1 Projektmanagement und Arbeitsaufteilung
 
 - **Boran:** Datenmodell, SQLModel-Modelle, DAO-Schicht und Seed-Daten
 - **Mouad:** Businesslogik, Validierung, Budgetberechnung, Umbuchungen und Tests
@@ -119,7 +119,7 @@ Nicht umgesetzt sind Bank-Sync, echte Mehrbenutzer-Synchronisation, Investments 
 
 Die Entwicklung sollte über GitHub-Commits nachvollziehbar sein. Für die Präsentation sollten alle Teammitglieder ihren Codebereich erklären können.
 
-## Verwendete Bibliotheken
+## 2.3 Verwendete Bibliotheken
 
 - **NiceGUI:** Browser-Oberfläche
 - **SQLModel und SQLAlchemy:** ORM und Datenbankzugriff
@@ -134,7 +134,7 @@ Die Entwicklung sollte über GitHub-Commits nachvollziehbar sein. Für die Präs
 4. App starten: `python -m budget_tracker_app`
 5. Im Browser öffnen: `http://localhost:8080`
 
-## Tests
+## 4 Tests
 
 Die Tests werden mit `python -m pytest` gestartet.
 
@@ -145,7 +145,7 @@ Die geforderte Mindeststruktur ist erfüllt:
 - 3 Datenbanktests
 - 3 Integrationstests
 
-## Projektanforderungen SS26
+## 2.4 Projektanforderungen SS26
 
 - **NiceGUI Browser-App:** Die App läuft im Browser, die UI wird serverseitig mit Python aufgebaut.
 - **Objektorientierung:** Modelle, Services, Controller, DAOs und App-Komposition sind als Klassen strukturiert.
@@ -157,7 +157,7 @@ Die geforderte Mindeststruktur ist erfüllt:
 - **Export:** Monatsberichte können als PDF und CSV erstellt werden.
 - **Dokumentation:** README beschreibt Ziel, Funktionen, Architektur, Bedienung und Tests.
 
-## Mögliche Erweiterungen
+## 2.5 Mögliche Erweiterungen
 
 Folgende Punkte sind bewusst als Erweiterung eingeordnet, weil sie ein grösseres Benutzer- und Rechtekonzept brauchen:
 
@@ -165,11 +165,11 @@ Folgende Punkte sind bewusst als Erweiterung eingeordnet, weil sie ein grössere
 - Benutzerprofil mit mehreren Benutzern
 - Benachrichtigungen mit gespeicherten Regeln
 
-## NiceGUI-Oberfläche, Dashboard, Diagramme, Export und Dokumentation
+## 5.1 NiceGUI-Oberfläche, Dashboard, Diagramme, Export und Dokumentation
 
 Dieser Projektbeitrag befindet sich hauptsächlich in der Präsentationsschicht der Anwendung. Der Schwerpunkt liegt auf der NiceGUI-Oberfläche, dem Tailwind-Design, dem Dashboard, den Diagrammen, der Export-Auslösung über die Benutzeroberfläche und der README-Dokumentation.
 
-### Umgesetzte Aufgaben
+### 5.2 Umgesetzte Aufgaben
 
 * NiceGUI-Seiten in `budget_tracker_app/ui/pages.py` wurden aufgebaut und angepasst
 * Die Benutzeroberfläche wurde mit Tailwind-Utility-Klassen über `.classes()` gestaltet
@@ -180,7 +180,7 @@ Dieser Projektbeitrag befindet sich hauptsächlich in der Präsentationsschicht 
 * Die Benutzerführung wurde durch klare Seitenbereiche, Formulare, Tabellen und Statusmeldungen verbessert
 * Die README-Dokumentation wurde mit Architektur-, Design- und Diagramminformationen ergänzt und gepflegt
 
-### NiceGUI- und Tailwind-Design
+### 5.3 NiceGUI- und Tailwind-Design
 
 Die Oberfläche wurde mit NiceGUI umgesetzt. Die UI-Komponenten werden in Python erstellt und im Browser dargestellt. Für das visuelle Design werden hauptsächlich Tailwind-Utility-Klassen direkt über `.classes()` verwendet.
 
@@ -197,7 +197,7 @@ Beispiele für verwendete Tailwind-Klassen:
 
 Eigenes CSS wird nur für spezielle Elemente verwendet, bei denen Tailwind-Klassen allein nicht sinnvoll ausreichen, zum Beispiel für Progress-Bars oder Tabellenbereiche. Der Hauptteil des Designs bleibt dadurch direkt im NiceGUI-Code sichtbar.
 
-### Dashboard
+### 5.4 Dashboard
 
 Das Dashboard bildet die zentrale Übersichtsseite der Anwendung. Es fasst die wichtigsten Budgetinformationen eines ausgewählten Monats zusammen.
 
@@ -219,7 +219,7 @@ Enthaltene Dashboard-Bereiche:
 
 Die Darstellung erfolgt über Karten, Tabellen, Fortschrittsanzeigen und Diagramme. Dadurch können wichtige Finanzinformationen schnell erfasst werden, ohne dass alle Buchungen einzeln analysiert werden müssen.
 
-### Diagramme
+### 5.5 Diagramme
 
 Die Diagramme unterstützen die visuelle Auswertung der Budgetdaten.
 
@@ -237,7 +237,7 @@ Umgesetzte Diagramme:
 
 Die Diagramme ergänzen die tabellarische Darstellung und verbessern die Verständlichkeit der Budgetauswertung.
 
-### Export
+### 5.6 Export
 
 Die Export-Funktionen werden über die NiceGUI-Oberfläche ausgelöst.
 
@@ -250,7 +250,7 @@ Umgesetzte Exporte:
 
 Die Benutzeroberfläche stellt die Buttons und Rückmeldungen für den Export bereit. Die eigentliche Dateierstellung erfolgt über den `ReportService`.
 
-### Abgrenzung des Beitrags
+### 5.7 Abgrenzung des Beitrags
 
 Die Oberfläche greift nicht direkt auf die Datenbank zu. Benutzeraktionen werden in der NiceGUI-Oberfläche ausgelöst und danach über Controller und Services verarbeitet. Dadurch bleibt die Präsentationsschicht von Businesslogik und Datenbankzugriff getrennt.
 
@@ -263,7 +263,7 @@ Betroffene Bereiche:
 * Tailwind-Design
 * README-Dokumentation
 
-## ER-Diagramm
+## 3.3 ER-Diagramm
 
 Das folgende ER-Diagramm zeigt das Datenmodell der Anwendung. Es dokumentiert Tabellen, Primärschlüssel, Fremdschlüssel und die Beziehung zwischen Kategorien und Buchungen.
 
@@ -304,7 +304,7 @@ erDiagram
     }
 ```
 
-### Erklärung des ER-Diagramms
+### 3.4 Erklärung des ER-Diagramms
 
 * `Category` speichert die Kategorien für Buchungen.
 * `Transaction` speichert Einnahmen, Ausgaben und Umbuchungen.
@@ -313,7 +313,7 @@ erDiagram
 * `UserAccount` speichert den lokalen Benutzer für den Passwortschutz.
 * Die Beziehung zwischen `Category` und `Transaction` ist eine 1:n-Beziehung: Eine Kategorie kann mehrere Buchungen enthalten, eine Buchung gehört jedoch zu genau einer Kategorie.
 
-## Klassendiagramm
+## 5.8 Klassendiagramm
 
 Das Klassendiagramm zeigt die wichtigsten Klassen und ihre Zusammenarbeit. Der Fokus liegt auf der Verbindung zwischen Oberfläche, Controller, Services, DAOs und Datenmodell.
 
